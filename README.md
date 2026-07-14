@@ -1,41 +1,13 @@
 <p align="center">
-  <!-- Animated terminal SVG -->
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" width="760">
-    <!-- Background terminal -->
-    <rect x="0" y="0" width="760" height="220" rx="0" fill="#111" stroke="#dc2626" stroke-width="3"/>
-    <!-- Title bar -->
-    <rect x="3" y="3" width="754" height="30" fill="#1a1a1a"/>
-    <line x1="3" y1="33" x2="757" y2="33" stroke="#333" stroke-width="1"/>
-    <circle cx="22" cy="18" r="5" fill="#dc2626"/>
-    <circle cx="40" cy="18" r="5" fill="#555"/>
-    <circle cx="58" cy="18" r="5" fill="#555"/>
-    <text x="380" y="23" font-family="monospace" font-size="11" fill="#666" text-anchor="middle" letter-spacing="2">loehoer.ai — prd generator</text>
-    <!-- Main title -->
-    <text x="30" y="75" font-family="monospace" font-size="30" font-weight="bold" fill="#dc2626">&gt;&gt;&gt; loehoer.ai &mdash; prd generator &lt;&lt;&lt;</text>
-    <text x="30" y="105" font-family="monospace" font-size="13" fill="#666">──────────────────────────────────────────────────</text>
-    <!-- Info lines -->
-    <text x="30" y="135" font-family="monospace" font-size="14" fill="#e0e0e0">$ model: <tspan fill="#dc2626">groq cloud (llama-3.1-8b-instant)</tspan></text>
-    <text x="30" y="160" font-family="monospace" font-size="14" fill="#e0e0e0">$ rag  : <tspan fill="#dc2626">chromadb + miniml-l6-v2 — 7 pdf</tspan></text>
-    <text x="30" y="185" font-family="monospace" font-size="14" fill="#e0e0e0">$ eval : <tspan fill="#dc2626">rouge-1/2/l</tspan></text>
-    <!-- Blinking cursor (SMIL animation) -->
-    <rect x="234" y="173" width="9" height="16" fill="#dc2626" rx="0">
-      <animate attributeName="opacity" values="1;0;1" dur="0.8s" repeatCount="indefinite"/>
-    </rect>
-    <!-- Scanline overlay (SMIL animation) -->
-    <rect x="3" y="3" width="754" height="3" fill="rgba(220,38,38,0.12)">
-      <animateTransform attributeName="transform" type="translate" values="0 0; 0 214; 0 0" dur="4s" repeatCount="indefinite"/>
-    </rect>
-  </svg>
+  <img src="report/header.svg" alt="terminal header" width="760"/>
 </p>
 
 <p align="center">
-  <code>
-  [<span style="color:#dc2626">rag</span>] [<span style="color:#dc2626">llm</span>] [<span style="color:#dc2626">rouge</span>] [<span style="color:#dc2626">fastapi</span>] [<span style="color:#dc2626">react</span>]
-  </code>
+  <code>[<span style="color:#dc2626">rag</span>] [<span style="color:#dc2626">llm</span>] [<span style="color:#dc2626">rouge</span>] [<span style="color:#dc2626">fastapi</span>] [<span style="color:#dc2626">react</span>]</code>
 </p>
 
 <p align="center">
-  <sub>rizki dzulfikar al-qatiri (2406118) &amp; naupal nahban (2406119)</sub>
+  <i>rizki dzulfikar al-qatiri (2406118) &amp; naupal nahban (2406119)</i>
 </p>
 
 ---
@@ -44,13 +16,11 @@
 >>> ringkasan
 ```
 
-Pipeline <span style="color:#dc2626">**rag-based prd generator**</span> — groq cloud (`llama-3.1-8b-instant`) + chromadb + rouge-1/2/l.
+Pipeline <b style="color:#dc2626">rag-based prd generator</b> — groq cloud (llama-3.1-8b-instant) + chromadb + rouge-1/2/l.
 
-```
-pendekatan
-  ├── [a] tanpa rag    → direct prompt, pengetahuan internal llm
-  └── [b] dengan rag   → retrieval dari chromadb + konteks 7 pdf — model utama
-```
+**Dua pendekatan:**
+- `[a]` tanpa rag — direct prompt, pengetahuan internal llm
+- `[b]` dengan rag — retrieval dari chromadb + konteks 7 pdf — **model utama**
 
 ---
 
@@ -79,6 +49,7 @@ uas-kecerdasanbuatan/
 ├── report/                       # gambar evaluasi + rouge_results.json
 └── requirements-cloud.txt
 </pre>
+
 ---
 
 ```
@@ -87,7 +58,7 @@ uas-kecerdasanbuatan/
 
 ```
             800 chars               chromadb                rouge-1
-pdf ──────▶ chunking ──────▶ embedding ──────▶ generate ──────▶ score
+pdf ─────────── chunking ─────────── embedding ─────────── generate ─────────── score
             7 docs                miniml                groq llm     rouge-l
 ```
 
@@ -108,15 +79,17 @@ $ # isi llm_api_key (https://console.groq.com/keys)
 # 3. build vectorstore
 $ python3 -m app.rag_builder
 
-# 4. run notebook — model utama (rag)
+# 4. run notebook - model utama (rag)
 $ jupyter notebook uas_model/signature_model.ipynb
 
-# 5. run notebook — model pembanding (tanpa rag)
+# 5. run notebook - model pembanding (tanpa rag)
 $ jupyter notebook uas_model/comparison_model.ipynb
 
-# 6. evaluasi rouge   $ python3 app/evaluate_dataset.py
+# 6. evaluasi rouge
+$ python3 app/evaluate_dataset.py
 
-# 7. patch notebook   $ python3 app/patch_notebooks.py
+# 7. patch notebook
+$ python3 app/patch_notebooks.py
 ```
 
 ---
@@ -132,8 +105,7 @@ $ jupyter notebook uas_model/comparison_model.ipynb
 | `llm_api_key` | `—`                                             | api key           |
 | `llm_api_model`| `llama-3.1-8b-instant`                        | model id groq     |
 
-`.env`:
-```
+```env
 llm_backend=cloud
 llm_api_key=gsk_...
 ```
