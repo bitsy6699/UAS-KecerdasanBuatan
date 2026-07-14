@@ -10,8 +10,3 @@ dist/
 *.h5
 *.bin
 vectorstore/
-
-# Generated / tidak perlu di-push:
-App/assets.png
-data/dataset/*.png
-data/dataset/rouge_results.json

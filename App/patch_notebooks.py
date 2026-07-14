@@ -97,6 +97,14 @@ if c11:
     c11['outputs'] = []
     c11['execution_count'] = None
 
+# fix cell 3: clear stale output (masih nunjukin Llama-3.2-1B-Instruct + mps)
+for c in comp['cells']:
+    src = ''.join(c.get('source', []))
+    out_text = ''.join(''.join(o.get('text', [])) for o in c.get('outputs', []))
+    if "print('Model: Groq cloud" in src and ('Project root' in out_text or 'mps' in out_text):
+        c['outputs'] = []
+        c['execution_count'] = None
+
 c6 = find(comp, 'import pdfplumber')
 if c6 and RES:
     out = ["Evaluasi ROUGE: Tanpa RAG vs Dengan RAG (per sistem)\n\n"]
@@ -142,6 +150,7 @@ if du:
 
 for old, new in FIXES:
     patch_cells(comp, old, new)
+for c in comp['cells']: c.setdefault('metadata', {})
 save(COMP, comp)
 print('Comparison_model.ipynb patched.')
 
@@ -249,6 +258,7 @@ if not find(sig, '# Demo: Generate PRD'):
         idx = sig['cells'].index(demo_md)
         sig['cells'].insert(idx + 1, {
         'cell_type': 'code',
+        'metadata': {},
         'source': [
             "# Demo: Generate PRD\n",
             "prompt = \"Buat PRD untuk aplikasi mobile laundry antar jemput\"\n",
@@ -271,5 +281,6 @@ patch_cells(sig, '### 5.6 ', '### 5.5 ')
 
 for old, new in FIXES:
     patch_cells(sig, old, new)
+for c in sig['cells']: c.setdefault('metadata', {})
 save(SIG, sig)
 print('Signature_model.ipynb patched.')
