@@ -12,9 +12,6 @@ dist/
 vectorstore/
 Model/llama/
 
-# Folder berikut dikecualikan dari push (batas ukuran GitHub):
-App/
-Model/
-Panduan_UAS_KecerdasanBuatan.md
+# Generated / tidak perlu di-push:
 output/
 

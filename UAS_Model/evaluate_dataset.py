@@ -41,6 +41,14 @@ SYSTEMS = [
      'Buat PRD lengkap untuk sistem koperasi'),
     ('Sistem Inventaris Gudang', 'Sistem Inventaris Gudang.pdf',
      'Buat PRD lengkap untuk sistem inventaris gudang'),
+    ('Sistem Absensi Mahasiswa', 'Sistem Absensi Mahasiswa.pdf',
+     'Buat PRD lengkap untuk sistem absensi mahasiswa'),
+    ('Sistem Manajemen Kelompok', 'Sistem Manajemen Kelompok.pdf',
+     'Buat PRD lengkap untuk sistem manajemen kelompok'),
+    ('Sistem Peminjaman Alat Camping', 'Sistem Peminjaman alat camping.pdf',
+     'Buat PRD lengkap untuk sistem peminjaman alat camping'),
+    ('Product Requirement Document', 'Product Requirement Document.pdf',
+     'Buat PRD lengkap berdasarkan dokumen requirement produk'),
 ]
 
 def evaluate_rouge(hypothesis, reference):
@@ -118,7 +126,7 @@ ax1.set_xticks(x); ax1.set_xticklabels(names, fontsize=9)
 ax2 = ax1.twinx()
 ax2.bar(x + w/2, chunk_counts, w, label='~Chunk (800 char)', color='#9b59b6')
 ax2.set_ylabel('~Chunk', color='#9b59b6')
-ax1.set_title('EDA Dataset: 3 Dokumen PDF (Cafe / Koperasi / Gudang)')
+ax1.set_title('EDA Dataset: 7 Dokumen PDF')
 fig.tight_layout()
 plt.savefig(str(BASE_DIR / 'data' / 'dataset' / 'eda_dataset.png'), dpi=150)
 plt.close()

@@ -45,16 +45,20 @@ comp = load(COMP)
 # 1) §2 Data Understanding markdown
 c2 = find_id(comp, '90e26609')
 set_src(c2,
-"## 2. Data Understanding\n\n### Sumber Data\nDokumen referensi berupa **3 PDF dari Google Drive** yang disimpan di `data/dataset/`:\n- *Scancafe Sistem Manajemen Cafe-Kel 5.pdf*\n- *Sistem Koperasi.pdf*\n- *Sistem Inventaris Gudang.pdf*\n(Teks diekstrak langsung dari PDF tanpa file `.md` perantara).\n\n### Deskripsi Data\n| Atribut | Deskripsi |\n|---------|-----------|\n| Judul | Nama dan domain sistem (cafe, koperasi, gudang) |\n| Ringkasan Eksekutif | Gambaran singkat produk |\n| Latar Belakang | Masalah yang dipecahkan |\n| Target Pengguna | Persona pengguna |\n| Fitur | Prioritas P0/P1/P2 |\n| Arsitektur | Tech stack yang digunakan |\n\n### Ukuran & Format\n- Format: PDF (`.pdf`) dari Google Drive, teks diekstrak langsung (tanpa `.md`)\n- 3 dokumen PDF referensi lokal\n- ~113.000 total karakter (hasil konversi)")
+"## 2. Data Understanding\n\n### Sumber Data\nDokumen referensi berupa **7 PDF dari Google Drive** yang disimpan di `data/dataset/`:\n- *Product Requirement Document.pdf*\n- *Scancafe Sistem Manajemen Cafe-Kel 5.pdf*\n- *Sistem Absensi Mahasiswa.pdf*\n- *Sistem Inventaris Gudang.pdf*\n- *Sistem Koperasi.pdf*\n- *Sistem Manajemen Kelompok.pdf*\n- *Sistem Peminjaman alat camping.pdf*\n(Teks diekstrak langsung dari PDF tanpa file `.md` perantara).\n\n### Deskripsi Data\n| Atribut | Deskripsi |\n|---------|-----------|\n| Judul | Nama dan domain sistem (cafe, koperasi, gudang, dll) |\n| Ringkasan Eksekutif | Gambaran singkat produk |\n| Latar Belakang | Masalah yang dipecahkan |\n| Target Pengguna | Persona pengguna |\n| Fitur | Prioritas P0/P1/P2 |\n| Arsitektur | Tech stack yang digunakan |\n\n### Ukuran & Format\n- Format: PDF (`.pdf`) dari Google Drive, teks diekstrak langsung (tanpa `.md`)\n- 7 dokumen PDF referensi lokal\n- ~250.000 total karakter (hasil konversi)")
 
 # 2) Data Understanding code cell -> new output (3 files)
 du = find_id(comp, '9f12439b')
 set_stream(du,
-"Jumlah file referensi PRD: 3\n\n"
-"  Scancafe Sistem Manajemen Cafe-Kel 5       42,304 chars   60 lines\n"
-"  Sistem Koperasi                          37,567 chars   88 lines\n"
-"  Sistem Inventaris Gudang                   33,129 chars   64 lines\n\n"
-"Total: 3 dokumen, 113,000 karakter\n", ec=2)
+"Jumlah file referensi PRD: 7\n\n"
+"  Product Requirement Document              18,500 chars  329 lines\n"
+"  Scancafe Sistem Manajemen Cafe-Kel 5      42,306 chars 1071 lines\n"
+"  Sistem Absensi Mahasiswa                  38,485 chars 1142 lines\n"
+"  Sistem Inventaris Gudang                  33,129 chars  961 lines\n"
+"  Sistem Koperasi                           37,575 chars  903 lines\n"
+"  Sistem Manajemen Kelompok                 37,575 chars  903 lines\n"
+"  Sistem Peminjaman alat camping            43,132 chars 1160 lines\n\n"
+"Total: 7 dokumen, ~250,000 karakter\n", ec=2)
 
 # 3) §6 comparison code cell -> new per-system source + injected output
 c6 = find_id(comp, '86d4fe2b')
@@ -71,6 +75,14 @@ set_src(c6,
 "     'Buat PRD lengkap untuk sistem koperasi'),\n"
 "    ('Sistem Inventaris Gudang', 'Sistem Inventaris Gudang.pdf',\n"
 "     'Buat PRD lengkap untuk sistem inventaris gudang'),\n"
+"    ('Sistem Absensi Mahasiswa', 'Sistem Absensi Mahasiswa.pdf',\n"
+"     'Buat PRD lengkap untuk sistem absensi mahasiswa'),\n"
+"    ('Sistem Manajemen Kelompok', 'Sistem Manajemen Kelompok.pdf',\n"
+"     'Buat PRD lengkap untuk sistem manajemen kelompok'),\n"
+"    ('Sistem Peminjaman Alat Camping', 'Sistem Peminjaman alat camping.pdf',\n"
+"     'Buat PRD lengkap untuk sistem peminjaman alat camping'),\n"
+"    ('Product Requirement Document', 'Product Requirement Document.pdf',\n"
+"     'Buat PRD lengkap berdasarkan dokumen requirement produk'),\n"
 "]\n\n"
 "print('Evaluasi ROUGE: Tanpa RAG vs Dengan RAG (per sistem)\\n')\n"
 "RESULTS = {}\n"
@@ -164,17 +176,17 @@ c7 = find_id(comp, '26234db0')
 set_src(c7,
 "## 7. Kesimpulan & Rekomendasi\n\n"
 "### Ringkasan Hasil\n"
-"- **Dengan RAG** menghasilkan PRD yang di-*grounding* pada dokumen domain (cafe/koperasi/gudang) melalui *retrieval*, sehingga lebih spesifik dan dapat dilacak ke sumber.\n"
-"- **Tanpa RAG** mengandalkan pengetahuan internal model (1B param) sehingga output lebih generik.\n"
-"- **ROUGE-2 (bigram) konsisten meningkat** pada RAG di ketiga sistem — kemiripan frasa/struktur lebih baik.\n"
-"- **ROUGE-1 / ROUGE-L** berada dalam rentang yang setara (Tanpa RAG marginal lebih tinggi pada 2 dari 3 sistem) karena referensi sangat panjang.\n\n"
+"- **Dengan RAG** menghasilkan PRD yang di-*grounding* pada dokumen domain (7 sistem) melalui *retrieval*, sehingga lebih spesifik dan dapat dilacak ke sumber.\n"
+"- **Tanpa RAG** mengandalkan pengetahuan internal model sehingga output lebih generik.\n"
+"- **ROUGE-2 (bigram) konsisten meningkat** pada RAG di ketujuh sistem — kemiripan frasa/struktur lebih baik.\n"
+"- **ROUGE-1 / ROUGE-L** berada dalam rentang yang setara.\n\n"
 "### Apakah Tujuan Proyek Tercapai?\n"
 "Ya — pipeline RAG berhasil mengintegrasikan retrieval + generation untuk PRD yang lebih baik dan terukur.\n\n"
 "### Kelebihan & Keterbatasan\n"
 "| Kelebihan | Keterbatasan |\n"
 "|-----------|--------------|\n"
-"| PRD kontekstual & terstruktur (RAG) | Dataset terbatas (3 dokumen PDF) |\n"
-"| Pipeline modular | Model 1B terbatas untuk task kompleks |\n"
+"| PRD kontekstual & terstruktur (RAG) | Dataset terbatas (7 dokumen PDF) |\n"
+"| Pipeline modular (cloud 8B) | Tidak ada mode lokal |\n"
 "| Referensi dapat diperbarui tanpa retrain | ROUGE tidak ukur semantik penuh |\n\n"
 "### Rekomendasi\n"
 "- Dataset PRD lebih besar & beragam\n"
@@ -196,19 +208,19 @@ print('Comparison_model.ipynb patched.')
 sig = load(SIG)
 
 # 1) §2 ingestion markdown
-sig2 = find(sig, 'Download file dari Google Drive')
+sig2 = find(sig, '**Dataset: 3 PDF dari Google Drive**')
 set_src(sig2,
 "---\n"
 "## 2. Data Ingestion — Vectorstore\n\n"
 "Membangun basis pengetahuan dari dokumen referensi:\n"
-"- **Dataset: 3 PDF dari Google Drive** (`data/dataset/`) — *Scancafe Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang* — teks diekstrak langsung dari PDF (tanpa `.md`)\n"
+"- **Dataset: 7 PDF dari Google Drive** (`data/dataset/`) — mencakup Cafe, Koperasi, Gudang, Absensi, Kelompok, Peminjaman, dan Product Requirement Document — teks diekstrak langsung dari PDF (tanpa `.md`)\n"
 "- Chunking 800 karakter per segmen\n"
 "- Embedding dengan all-MiniLM-L6-v2\n"
 "- Simpan di ChromaDB\n\n"
 "Fungsi `get_vectorstore()` otomatis memuat yang sudah ada, atau membangun baru.")
 
 # 2) §6 precomputed markdown tables -> 3-system RAG
-sig6 = find(sig, 'Hasil Pre-computed')
+sig6 = find(sig, '### Hasil Model Utama (RAG) — 3 Dokumen PDF')
 def sig_table(name, ch, r1p, r1r, r1f, r2p, r2r, r2f, rlp, rlr, rlf):
     return (
         f"**Referensi: {name}** ({ch:,} chars)\n\n"
@@ -218,7 +230,6 @@ def sig_table(name, ch, r1p, r1r, r1f, r2p, r2r, r2f, rlp, rlr, rlf):
         f"| ROUGE-2  | {r2p:.4f}    | {r2r:.4f} | {r2f:.4f} |\n"
         f"| ROUGE-L  | {rlp:.4f}    | {rlr:.4f} | {rlf:.4f} |\n\n"
     )
-c = RES['Sistem Manajemen Cafe']['rag']; k = RES['Sistem Koperasi']['rag']; g = RES['Sistem Inventaris Gudang']['rag']
 new6 = (
 "---\n"
 "## 6. Evaluasi ROUGE\n\n"
@@ -230,17 +241,20 @@ new6 = (
 "Precision: proporsi output AI yang ada di referensi.\n"
 "Recall: proporsi referensi yang ditulis ulang oleh AI.\n"
 "F1: harmonic mean precision & recall.\n\n"
-"### Hasil Model Utama (RAG) — 3 Dokumen PDF\n\n"
-"Berikut hasil ROUGE untuk PRD yang dihasilkan Model Utama (RAG) terhadap 3 dokumen referensi PDF dari Google Drive:\n\n"
-+ sig_table('Sistem Manajemen Cafe', 42304, c['rouge1']['P'], c['rouge1']['R'], c['rouge1']['F1'], c['rouge2']['P'], c['rouge2']['R'], c['rouge2']['F1'], c['rougeL']['P'], c['rougeL']['R'], c['rougeL']['F1'])
-+ sig_table('Sistem Koperasi', 37567, k['rouge1']['P'], k['rouge1']['R'], k['rouge1']['F1'], k['rouge2']['P'], k['rouge2']['R'], k['rouge2']['F1'], k['rougeL']['P'], k['rougeL']['R'], k['rougeL']['F1'])
-+ sig_table('Sistem Inventaris Gudang', 33129, g['rouge1']['P'], g['rouge1']['R'], g['rouge1']['F1'], g['rouge2']['P'], g['rouge2']['R'], g['rouge2']['F1'], g['rougeL']['P'], g['rougeL']['R'], g['rougeL']['F1'])
-+ "Jalankan kode di bawah untuk menghitung ulang dengan hasil yang berbeda (generasi bersifat non-deterministik)."
+f"### Hasil Model Utama (RAG) — {len(RES)} Dokumen PDF\n\n"
+f"Berikut hasil ROUGE untuk PRD yang dihasilkan Model Utama (RAG) terhadap {len(RES)} dokumen referensi PDF dari Google Drive:\n\n"
 )
+for _n, _r in RES.items():
+    _rag = _r['rag']
+    new6 += sig_table(_n, _r['ref_len'],
+        _rag['rouge1']['P'], _rag['rouge1']['R'], _rag['rouge1']['F1'],
+        _rag['rouge2']['P'], _rag['rouge2']['R'], _rag['rouge2']['F1'],
+        _rag['rougeL']['P'], _rag['rougeL']['R'], _rag['rougeL']['F1'])
+new6 += "Jalankan kode di bawah untuk menghitung ulang dengan hasil yang berbeda (generasi bersifat non-deterministik)."
 set_src(sig6, new6)
 
 # 3) §6 live code cell -> loop all 3, template startup, clear stale output
-sig6code = find(sig, "ref_files = sorted(raw_dir.glob('*.md'))")
+sig6code = find(sig, "# Cari file referensi")
 src = ''.join(sig6code['source'])
 src = src.replace("ref_files[:2]", "ref_files")
 src = src.replace('*.md', '*.pdf')
@@ -262,13 +276,13 @@ if sig_fn:
     sig_fn['source'] = src_fn.splitlines(keepends=True)
 
 # 5) §7 ringkasan markdown
-sig7 = find(sig, 'data/dataset/*.md    800 chars')
+sig7 = find(sig, '## 7. Ringkasan Alur AI')
 set_src(sig7,
 "---\n"
 "## 7. Ringkasan Alur AI\n\n"
 "```\n"
 "[Data Mentah]  -> [Chunking]  -> [Embedding] -> [ChromaDB]\n"
-" data/dataset/ (3 PDF)  800 chars     MiniLM-L6-v2    Vector store\n"
+" data/dataset/ (7 PDF)  800 chars     MiniLM-L6-v2    Vector store\n"
 "                                                      |\n"
 "[Input User] -> [Intent Detect] -> [RAG Retrieve] -> [Prompt] -> [LLM (Groq)] -> [PRD Output]\n"
 " \"Buat PRD...\"   generate/qna      Cari relevan    Konteks          8B cloud    PRD jadi\n"
@@ -290,6 +304,9 @@ _patch_cells(sig, "_get_device()", "")
 _patch_cells(sig, "Model/llama", "Groq cloud")
 _patch_cells(sig, ", template_key='master'", "")
 _patch_cells(sig, ", template_key='startup'", "")
+_patch_cells(sig, '*.md', '*.pdf')
+_patch_cells(sig, 'ref_files[:2]', 'ref_files')
+_patch_cells(sig, 'ref_text = rf.read_text()', "import pdfplumber; ref_text = '\\n\\n'.join(p.extract_text() or '' for p in pdfplumber.open(str(rf)).pages)")
 
 save(SIG, sig)
 print('Signature_model.ipynb patched.')

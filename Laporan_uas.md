@@ -9,14 +9,14 @@
 
 ## 1. Judul Proyek
 
-**Generasi Otomatis Product Requirements Document (PRD) Menggunakan LLM (Llama via Groq cloud / lokal) dengan Pendekatan Retrieval-Augmented Generation (RAG) dan Evaluasi ROUGE.**
+**Generasi Otomatis Product Requirements Document (PRD) Menggunakan LLM (Llama via Groq cloud) dengan Pendekatan Retrieval-Augmented Generation (RAG) dan Evaluasi ROUGE.**
 
 Proyek ini membangun sistem yang menyusun PRD — dokumen yang menjembatani kebutuhan bisnis, pengguna, dan implementasi teknis — secara otomatis dari sebuah prompt produk. Domain utamanya adalah NLP untuk *text generation*. Sesuai ketentuan Panduan UAS (pemilihan minimal 2 algoritma/pendekatan untuk dibandingkan), proyek ini membandingkan dua pendekatan:
 
 - **Model Utama** — Pendekatan **RAG** (*Retrieval-Augmented Generation*), diimplementasikan pada `UAS_Model/Signature_model.ipynb`.
 - **Model Pembanding** — Pendekatan **Tanpa RAG** (*direct prompt* / *zero-shot*), diimplementasikan pada `UAS_Model/Comparison_model.ipynb`.
 
-Kedua model menggunakan model bahasa yang sama (*Llama 3.2 1B Instruct* pada mode lokal, atau model lain via Groq cloud pada mode cloud); satu-satunya variabel yang dibandingkan adalah **ada tidaknya tahap *retrieval*** dari basis pengetahuan.
+Kedua model menggunakan LLM yang sama (**Groq cloud `llama-3.1-8b-instant`** — 8B, tanpa beban lokal). Satu-satunya variabel yang dibandingkan adalah **ada tidaknya tahap *retrieval*** dari basis pengetahuan.
 
 ---
 
@@ -30,7 +30,7 @@ Dalam literatur, *Retrieval-Augmented Generation* (RAG) terbukti meningkatkan ku
 
 ### 2.2 Tujuan Proyek
 
-1. Mengimplementasikan pipeline RAG (**Model Utama**) untuk menghasilkan PRD otomatis menggunakan *Llama 3.2 1B Instruct*.
+1. Mengimplementasikan pipeline RAG (**Model Utama**) untuk menghasilkan PRD otomatis menggunakan LLM cloud (Groq `llama-3.1-8b-instant`).
 2. Membangun pendekatan *baseline* Tanpa RAG (**Model Pembanding**) sebagai pembanding.
 3. Membandingkan kualitas PRD dari kedua model secara kuantitatif menggunakan metrik ROUGE-1, ROUGE-2, dan ROUGE-L.
 
@@ -141,18 +141,18 @@ Data dibagi berdasarkan peran dokumen:
 
 ### 6.1 Pemilihan Algoritma / Pendekatan
 
-Sesuai ketentuan (minimal 2 pendekatan untuk dibandingkan), dibandingkan dua pendekatan berbasis LLM (Llama 3.2 1B lokal atau model cloud via Groq):
+Sesuai ketentuan (minimal 2 pendekatan untuk dibandingkan), dibandingkan dua pendekatan berbasis LLM (Groq cloud `llama-3.1-8b-instant`):
 
 | Pendekatan | Peran | Deskripsi | Komponen |
 |------------|-------|-----------|----------|
-| **RAG** | **Model Utama** (`UAS_Model/Signature_model.ipynb`) | LLM generate PRD **dengan** konteks dari *retrieval* | Groq cloud (8B) / Llama 3.2 1B + ChromaDB + Embedding |
-| **Tanpa RAG** | **Model Pembanding** (`UAS_Model/Comparison_model.ipynb`) | LLM generate PRD **tanpa** konteks eksternal (direct prompt) | Groq cloud (8B) / Llama 3.2 1B (tanpa retrieval) |
+| **RAG** | **Model Utama** (`UAS_Model/Signature_model.ipynb`) | LLM generate PRD **dengan** konteks dari *retrieval* | Groq cloud (8B) + ChromaDB + Embedding |
+| **Tanpa RAG** | **Model Pembanding** (`UAS_Model/Comparison_model.ipynb`) | LLM generate PRD **tanpa** konteks eksternal (direct prompt) | Groq cloud (8B) tanpa retrieval |
 
 ### 6.2 Alasan Pemilihan
 
-**Llama 3.2 1B Instruct** (Grattafiori et al., 2024):
-- Model *open-source* dengan performa kompetitif untuk tugas instruksional.
-- Ukuran 1B parameter (mode lokal) memungkinkan inferensi di perangkat konsumen (CPU/MPS). Mode cloud menggunakan Groq API (8B, tanpa beban lokal).
+**Groq cloud `llama-3.1-8b-instant`** (8B):
+- Model 8B dari Meta yang diakses via API Groq — tanpa beban inferensi lokal.
+- Cepat (1–16 detik per generasi) dan tidak membutuhkan GPU/CPU berat.
 - Varian *Instruct* dioptimalkan untuk mengikuti instruksi.
 
 **RAG (Retrieval-Augmented Generation)** (Lewis et al., 2020):
@@ -170,11 +170,10 @@ Pendekatan **Tanpa RAG** dijadikan *baseline* untuk mengukur kontribusi tahap *r
 from chatbot import PRDChatbot
 cb = PRDChatbot()
 prompt = "Buat PRD untuk aplikasi e-commerce"
-prd = cb.generate_prd(prompt)  # RAG: retrieve -> augment -> generate (cloud / lokal)
+prd = cb.generate_prd(prompt)  # RAG: retrieve -> augment -> generate (cloud)
 ```
 
-*Pipeline* (cloud): `Query -> Embedding -> ChromaDB (top-3) -> Augment Prompt -> Groq API (8B) -> PRD`.
-*Pipeline* (lokal): `Query -> Embedding -> ChromaDB (top-3) -> Augment Prompt -> Llama 3.2 1B -> PRD`.
+*Pipeline*: `Query -> Embedding -> ChromaDB (top-3) -> Augment Prompt -> Groq API (8B) -> PRD`.
 
 **Model Pembanding — Tanpa RAG (`UAS_Model/Comparison_model.ipynb`):**
 
@@ -195,7 +194,7 @@ Kedua model menggunakan parameter generasi yang sama: `max_new_tokens=768`, `tem
 | Sumber informasi | Dokumen referensi (ChromaDB) + pengetahuan model | Pengetahuan internal model (hingga 2023) |
 | Relevansi domain | Spesifik, berdasarkan konteks yang di-*retrieve* | Generik, bergantung *training data* |
 | Struktur output | Mengikuti pola referensi | Variatif |
-| Waktu generasi | ~43-96 detik (termasuk *retrieval*) | ~43-60 detik |
+| Waktu generasi | ~1-16 detik (cloud API) | ~1-9 detik (cloud API) |
 
 ### 6.5 Visualisasi Model
 
@@ -204,9 +203,9 @@ Kedua model menggunakan parameter generasi yang sama: `max_new_tokens=768`, `tem
                                                                 |
 [Template / Konteks] ---------------------------------------------> [Prompt Builder]
                                                                  |
-[Model Utama: Groq cloud (8B) / Llama 3.2 1B] <- [Augmented Prompt w/ Context]
+[Model Utama: Groq cloud (8B)] <- [Augmented Prompt w/ Context]
                                      vs
-[Model Pembanding: Groq cloud (8B) / Llama 3.2 1B] <- [Prompt tanpa Context]
+[Model Pembanding: Groq cloud (8B)] <- [Prompt tanpa Context]
          |                                              |
    [PRD Output - RAG]                          [PRD Output - No RAG]
          |                                              |
@@ -225,39 +224,71 @@ ROUGE (*Recall-Oriented Understudy for Gisting Evaluation*) mengukur kemiripan t
 - **ROUGE-2**: overlap *bigram* (pasangan kata).
 - **ROUGE-L**: *Longest Common Subsequence* (struktur kalimat).
 
-Setiap metrik dihitung dalam tiga varian: **Precision** (proporsi output yang ada di referensi), **Recall** (proporsi referensi yang muncul di output), dan **F1** (*harmonic mean* keduanya). Generasi bersifat non-deterministik, sehingga angka berikut diambil dari **eksekusi ulang yang segar** (*fresh run*) pada ketiga dokumen referensi.
+Setiap metrik dihitung dalam tiga varian: **Precision** (proporsi output yang ada di referensi), **Recall** (proporsi referensi yang muncul di output), dan **F1** (*harmonic mean* keduanya). Generasi bersifat non-deterministik, sehingga angka berikut diambil dari **eksekusi ulang yang segar** (*fresh run*) pada ketujuh dokumen referensi.
 
 ### 7.2 Hasil per Referensi
 
-**Referensi: Sistem Manajemen Cafe** (42.304 karakter)
+**Referensi: Sistem Manajemen Cafe** (42.306 karakter)
 
 | Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
 |--------|------------------------------|---------------------------------------|----------|
-| ROUGE-1 | 0.8247 / 0.0485 / **0.0916** | 0.7362 / 0.0429 / 0.0811 | +0.0106 |
-| ROUGE-2 | 0.3718 / 0.0218 / **0.0412** | 0.1512 / 0.0088 / 0.0166 | +0.0246 |
-| ROUGE-L | 0.4655 / 0.0274 / **0.0517** | 0.4087 / 0.0238 / 0.0450 | +0.0067 |
+| ROUGE-1 | 0.8365 / 0.0449 / **0.0853** | 0.7165 / 0.0397 / 0.0752 | +0.0101 |
+| ROUGE-2 | 0.3691 / 0.0198 / **0.0375** | 0.0887 / 0.0049 / 0.0093 | +0.0282 |
+| ROUGE-L | 0.5723 / 0.0307 / **0.0584** | 0.3659 / 0.0203 / 0.0384 | +0.0199 |
 
-**Referensi: Sistem Koperasi** (37.567 karakter)
+**Referensi: Sistem Koperasi** (37.575 karakter)
 
 | Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
 |--------|------------------------------|---------------------------------------|----------|
-| ROUGE-1 | 0.6564 / 0.0414 / **0.0779** | 0.6970 / 0.0445 / 0.0836 | -0.0057 |
-| ROUGE-2 | 0.1477 / 0.0093 / **0.0175** | 0.2036 / 0.0130 / 0.0244 | -0.0069 |
-| ROUGE-L | 0.3436 / 0.0217 / **0.0408** | 0.4091 / 0.0261 / 0.0491 | -0.0083 |
+| ROUGE-1 | 0.7199 / 0.0393 / **0.0745** | 0.6109 / 0.0346 / 0.0655 | +0.0089 |
+| ROUGE-2 | 0.1957 / 0.0106 / **0.0202** | 0.0959 / 0.0054 / 0.0103 | +0.0099 |
+| ROUGE-L | 0.4468 / 0.0244 / **0.0462** | 0.3447 / 0.0195 / 0.0370 | +0.0092 |
 
 **Referensi: Sistem Inventaris Gudang** (33.129 karakter)
 
 | Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
 |--------|------------------------------|---------------------------------------|----------|
-| ROUGE-1 | 0.7349 / 0.0548 / **0.1019** | 0.7573 / 0.0581 / 0.1080 | -0.0061 |
-| ROUGE-2 | 0.2628 / 0.0195 / **0.0364** | 0.1994 / 0.0153 / 0.0284 | +0.0080 |
-| ROUGE-L | 0.3825 / 0.0285 / **0.0531** | 0.3655 / 0.0281 / 0.0521 | +0.0010 |
+| ROUGE-1 | 0.8608 / 0.0611 / **0.1140** | 0.7589 / 0.0572 / 0.1064 | +0.0076 |
+| ROUGE-2 | 0.4032 / 0.0285 / **0.0533** | 0.2239 / 0.0168 / 0.0313 | +0.0219 |
+| ROUGE-L | 0.5032 / 0.0357 / **0.0667** | 0.4196 / 0.0316 / 0.0589 | +0.0078 |
+
+**Referensi: Sistem Absensi Mahasiswa** (38.485 karakter)
+
+| Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
+|--------|------------------------------|---------------------------------------|----------|
+| ROUGE-1 | 0.7705 / 0.0467 / **0.0880** | 0.7079 / 0.0500 / 0.0935 | −0.0055 |
+| ROUGE-2 | 0.3125 / 0.0189 / **0.0356** | 0.2620 / 0.0185 / 0.0345 | +0.0011 |
+| ROUGE-L | 0.4918 / 0.0298 / **0.0562** | 0.4101 / 0.0290 / 0.0542 | +0.0020 |
+
+**Referensi: Sistem Manajemen Kelompok** (37.575 karakter)
+
+| Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
+|--------|------------------------------|---------------------------------------|----------|
+| ROUGE-1 | 0.9283 / 0.0576 / **0.1085** | 0.7346 / 0.0509 / 0.0952 | +0.0134 |
+| ROUGE-2 | 0.5250 / 0.0325 / **0.0612** | 0.2157 / 0.0149 / 0.0279 | +0.0333 |
+| ROUGE-L | 0.6417 / 0.0398 / **0.0750** | 0.4078 / 0.0282 / 0.0528 | +0.0222 |
+
+**Referensi: Sistem Peminjaman Alat Camping** (43.132 karakter)
+
+| Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
+|--------|------------------------------|---------------------------------------|----------|
+| ROUGE-1 | 0.8394 / 0.0384 / **0.0735** | 0.7901 / 0.0428 / 0.0812 | −0.0077 |
+| ROUGE-2 | 0.4176 / 0.0191 / **0.0364** | 0.2012 / 0.0109 / 0.0206 | +0.0158 |
+| ROUGE-L | 0.4818 / 0.0221 / **0.0422** | 0.4352 / 0.0236 / 0.0447 | −0.0025 |
+
+**Referensi: Product Requirement Document** (18.500 karakter)
+
+| Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
+|--------|------------------------------|---------------------------------------|----------|
+| ROUGE-1 | 0.7626 / 0.0837 / **0.1508** | 0.5132 / 0.0612 / 0.1093 | +0.0415 |
+| ROUGE-2 | 0.1588 / 0.0174 / **0.0313** | 0.0565 / 0.0067 / 0.0120 | +0.0193 |
+| ROUGE-L | 0.3813 / 0.0418 / **0.0754** | 0.2583 / 0.0308 / 0.0550 | +0.0204 |
 
 ### 7.3 Visualisasi Perbandingan
 
 ![ROUGE Comparison](data/dataset/rouge_comparison.png)
 
-*Gambar 2. Perbandingan ROUGE F1-score: Model Utama (RAG, hijau) vs Model Pembanding (Tanpa RAG, merah) pada ketiga referensi.*
+*Gambar 2. Perbandingan ROUGE F1-score: Model Utama (RAG, hijau) vs Model Pembanding (Tanpa RAG, merah) pada ketujuh referensi.*
 
 ### 7.4 Confusion Matrix (Konteks)
 
@@ -271,15 +302,15 @@ Precision = TP / (TP + FP), Recall = TP / (TP + FN), F1 = 2*P*R / (P + R).
 
 ### 7.5 Penjelasan Kinerja Model - Model Terbaik
 
-**Model utama: Model Utama (RAG)** tetap dipertahankan sebagai solusi utama karena PRD yang dihasilkan *grounded* pada dokumen domain (cafe/koperasi/gudang) melalui *retrieval*, sehingga lebih spesifik dan dapat dilacak ke sumber.
+**Model utama: Model Utama (RAG)** tetap dipertahankan sebagai solusi utama karena PRD yang dihasilkan *grounded* pada dokumen domain (7 sistem: Cafe, Koperasi, Gudang, Absensi, Kelompok, Peminjaman, Product Requirement) melalui *retrieval*, sehingga lebih spesifik dan dapat dilacak ke sumber.
 
-Pada evaluasi ROUGE kali ini dengan **3 dokumen referensi PDF yang panjang** (33.129–42.304 karakter, jauh lebih besar dari output ~2.700 karakter), gambarannya lebih bernuansa:
+Pada evaluasi ROUGE kali ini dengan **7 dokumen referensi PDF** (18.500–43.132 karakter, jauh lebih besar dari output ~2.500–2.900 karakter), gambarannya lebih bernuansa:
 
-1. **ROUGE-2 (bigram) konsisten meningkat pada RAG di ketiga sistem** — Delta F1: +0.0246 (Cafe), +0.0080 (Gudang), dan meski −0.0069 pada Koperasi, RAG tetap memberikan overlap frasa/struktur yang lebih baik. Ini menunjukkan RAG menghasilkan kemiripan frasa yang lebih tinggi dengan konteks yang di-*retrieve*.
-2. **ROUGE-1 dan ROUGE-L**: Model Tanpa RAG marginal lebih tinggi pada 2 dari 3 sistem (Koperasi, Gudang). Penyebabnya: referensi sangat panjang sehingga *recall* rendah untuk kedua model, dan tanpa RAG model bebas menghasilkan kosakata PRD generik yang kebetulan overlap lebih banyak dengan terminologi umum referensi.
-3. **ROUGE-L** (struktur kalimat) berada pada rentang yang sama (Delta dalam ±0.009), artinya struktur PRD tidak berbeda mencolok antara kedua pendekatan.
+1. **ROUGE-2 (bigram) konsisten meningkat pada RAG di seluruh 7 sistem** — Delta F1 positif pada semua sistem (+0.0011 hingga +0.0333). Ini adalah bukti terkuat bahwa RAG meningkatkan kemiripan frasa/struktur dengan konteks yang di-*retrieve*. Sistem Manajemen Kelompok mencatat delta tertinggi (+0.0333), disusul Cafe (+0.0282) dan Gudang (+0.0219).
+2. **ROUGE-1**: RAG unggul pada 5 dari 7 sistem (Cafe, Koperasi, Gudang, Kelompok, Product Requirement). Peningkatan terbesar pada Product Requirement Document (+0.0415) — dokumen dengan referensi terpendek (18.500 karakter), paling dekat dengan panjang output. Sedikit penurunan pada Absensi (−0.0055) dan Peminjaman (−0.0077).
+3. **ROUGE-L** (struktur kalimat): RAG unggul pada 5 dari 7 sistem dengan delta +0.0020 hingga +0.0222. Satu sistem (Peminjaman) menunjukkan delta−0.0025 yang dapat diabaikan.
 
-**Kesimpulan:** RAG memberikan nilai tambah terutama pada kemiripan *bigram* (struktur/frasa) yang terjamah dari dokumen sumber, sementara keunggulan ROUGE-1/L pada Tanpa RAG lebih dipengaruhi panjang referensi daripada kualitas semantik. Untuk evaluasi yang lebih adil, disarankan membandingkan terhadap *reference* PRD yang sepanjang dengan output (lihat Rekomendasi).
+**Kesimpulan:** RAG memberikan nilai tambah yang konsisten pada kemiripan *bigram* (struktur/frasa) di semua sistem, dan secara umum meningkatkan ROUGE-1/L pada mayoritas sistem. Manfaat RAG paling terlihat ketika panjang referensi mendekati panjang output (Product Requirement Document). Untuk evaluasi yang lebih adil, tetap disarankan membandingkan terhadap *reference* PRD yang sepanjang dengan output (lihat Rekomendasi).
 
 ---
 
@@ -287,7 +318,7 @@ Pada evaluasi ROUGE kali ini dengan **3 dokumen referensi PDF yang panjang** (33
 
 ### 8.1 Ringkasan Hasil
 
-Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** menggunakan **Llama 3.2 1B Instruct** untuk menghasilkan PRD otomatis (**Model Utama**), dan membandingkannya dengan pendekatan *baseline* **Tanpa RAG** (**Model Pembanding**). Evaluasi ROUGE dari eksekusi segar pada **3 dokumen PDF** (Sistem Manajemen Cafe, Sistem Koperasi, Sistem Inventaris Gudang) menunjukkan **RAG secara konsisten meningkatkan ROUGE-2 (bigram/struktur)** di ketiga sistem, sementara ROUGE-1 dan ROUGE-L berada pada rentang yang setara (Tanpa RAG marginal lebih tinggi pada 2 dari 3 sistem) — dipengaruhi oleh panjang referensi yang jauh lebih besar dari output.
+Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** menggunakan **Groq cloud llama-3.1-8b-instant** untuk menghasilkan PRD otomatis (**Model Utama**), dan membandingkannya dengan pendekatan *baseline* **Tanpa RAG** (**Model Pembanding**). Evaluasi ROUGE dari eksekusi segar pada **7 dokumen PDF** (Cafe, Koperasi, Gudang, Absensi, Kelompok, Peminjaman, Product Requirement) menunjukkan **RAG secara konsisten meningkatkan ROUGE-2 (bigram/struktur)** di seluruh 7 sistem (Delta +0.0011 hingga +0.0333). ROUGE-1 dan ROUGE-L juga meningkat pada mayoritas sistem (5 dari 7) — pengaruh RAG paling kuat pada dokumen dengan referensi lebih pendek (Product Requirement Document, +0.0415).
 
 ### 8.2 Apakah Tujuan Proyek Tercapai?
 
@@ -300,15 +331,15 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 
 | Kelebihan | Keterbatasan |
 |-----------|--------------|
-| PRD lebih kontekstual & relevan (RAG) | Dataset referensi terbatas (3 dokumen PDF) |
-| Pipeline modular & mudah dikustomisasi | Model lokal 1B memiliki kapasitas terbatas (cloud 8B lebih mumpuni) |
+| PRD lebih kontekstual & relevan (RAG) | Dataset referensi terbatas (7 dokumen PDF) |
+| Pipeline modular & mudah dikustomisasi | Cloud API memerlukan koneksi internet |
 | Referensi dapat diperbarui tanpa *retrain* | ROUGE tidak mengukur kualitas semantik penuh |
 | Template fleksibel (5 varian) | Waktu generasi RAG lebih lama (termasuk *retrieval*) |
 
 ### 8.4 Rekomendasi Perbaikan
 
 1. **Dataset lebih besar** - kumpulkan lebih banyak contoh PRD dari berbagai domain.
-2. **Fine-tuning** - *fine-tune* Llama 3.2 dengan dataset PRD (mis. LoRA) untuk pemahaman domain lebih baik.
+2. **Fine-tuning** - *fine-tune* Llama dengan dataset PRD (mis. LoRA) untuk pemahaman domain lebih baik.
 3. **Evaluasi tambahan** - gunakan BERTScore, METEOR, atau LLM-as-a-judge untuk evaluasi semantik (Kumar et al., 2024; Liu et al., 2024).
 4. **Human evaluation** - validasi output oleh *product manager* profesional.
 5. **Multi-model comparison** - bandingkan dengan model lain (Mistral, Gemma, GPT-4).
@@ -345,9 +376,9 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 
 - **Notebook Model Utama (RAG)**: `UAS_Model/Signature_model.ipynb`
 - **Notebook Model Pembanding (Tanpa RAG)**: `UAS_Model/Comparison_model.ipynb`
-- **Dataset referensi**: `data/dataset/` (3 dokumen PDF: Cafe/Koperasi/Gudang)
+- **Dataset referensi**: `data/dataset/` (7 dokumen PDF)
 - **Jurnal referensi**: `data/Jurnal/` (5 PDF)
-- **ChromaDB**: *vector store* lokal (basis pengetahuan RAG)
+- **ChromaDB**: *vector store* (basis pengetahuan RAG)
 - **Visualisasi ROUGE**: `data/dataset/rouge_comparison.png`
 - **Visualisasi EDA**: `data/dataset/eda_dataset.png`
 - **Contoh Output**: `output/prd_frozen_food_b2b.md`
