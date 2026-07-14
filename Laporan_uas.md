@@ -56,7 +56,6 @@ Dalam literatur, *Retrieval-Augmented Generation* (RAG) terbukti meningkatkan ku
 Data yang digunakan adalah dokumen PRD referensi:
 
 - **`data/dataset/`** — 3 dokumen PDF yang dipindah dari Google Drive: *Sistem Manajemen Cafe*, *Sistem Koperasi*, dan *Sistem Inventaris Gudang* (dijadikan basis pengetahuan RAG dan referensi ROUGE).
-- **`data/prd_templates/`** — 5 *template* PRD (`master`, `startup`, `mobile`, `enterprise`, `data`).
 - **ChromaDB (*vector store*)** — hasil *embedding* dokumen referensi (basis pengetahuan RAG).
 - **`data/Jurnal/`** — 5 PDF jurnal referensi untuk landasan teori.
 
@@ -346,7 +345,6 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 - **Notebook Model Utama (RAG)**: `UAS_Model/Signature_model.ipynb`
 - **Notebook Model Pembanding (Tanpa RAG)**: `UAS_Model/Comparison_model.ipynb`
 - **Dataset referensi**: `data/dataset/` (3 dokumen PDF: Cafe/Koperasi/Gudang)
-- **Template PRD**: `data/prd_templates/` (5 template)
 - **Jurnal referensi**: `data/Jurnal/` (5 PDF)
 - **ChromaDB**: *vector store* lokal (basis pengetahuan RAG)
 - **Visualisasi ROUGE**: `data/dataset/rouge_comparison.png`

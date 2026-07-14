@@ -16,7 +16,6 @@ UAS-KecerdasanBuatan/
 │   └── Comparison_model.ipynb   # Model Pembanding (Tanpa RAG)
 └── data/
     ├── dataset/             # 3 dokumen PDF (Cafe/Koperasi/Gudang) dari Google Drive
-    ├── prd_templates/       # 5 template PRD
     └── Jurnal/              # Referensi jurnal (5 PDF)
 ```
 
