@@ -39,7 +39,7 @@ jupyter notebook UAS_Model/Comparison_model.ipynb   # Model Pembanding (Tanpa RA
 
 > **Catatan:** Notebook mengimpor modul `App/` dan membutuhkan chromaDB `Model/` (keduanya **tidak diikutsertakan** dalam repositori ini karena batas ukuran GitHub). Hasil evaluasi ROUGE sudah dicatat lengkap di `Laporan_uas.md`.
 > 
-> **LLM Backend:** Secara default generasi PRD menggunakan **Groq API (cloud)** — laptop tidak panas, model ~3B. Untuk fallback lokal (tanpa internet), set `LLM_BACKEND=local` (lihat `.env.example`).
+> **LLM Backend:** Secara default generasi PRD menggunakan **Groq API (cloud)** — laptop tidak panas, model 8B. Untuk fallback lokal (tanpa internet), set `LLM_BACKEND=local` (lihat `.env.example`).
 
 ### Konfigurasi LLM Backend
 
@@ -50,7 +50,7 @@ Pipeline mendukung dua mode LLM:
 | `LLM_BACKEND` | `cloud` | `cloud` (Groq) atau `local` (PyTorch) |
 | `LLM_API_BASE` | `https://api.groq.com/openai/v1` | Endpoint OpenAI-compatible |
 | `LLM_API_KEY` | — | API key (dapatkan di [console.groq.com](https://console.groq.com/keys)) |
-| `LLM_API_MODEL` | `llama-3.2-3b-preview` | Model ID (Groq: 3b, 8b, 70b) |
+| `LLM_API_MODEL` | `llama-3.1-8b-instant` | Model ID (Groq: 8b, 70b) |
 
 **Setup:**
 ```bash

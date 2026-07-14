@@ -1,8 +1,11 @@
 import json, base64
 from pathlib import Path
 
-BASE = Path('/Users/rizkidzulfikaral-qatiri/Coding Life/UAS-KecerdasanBuatan')
-RES = json.loads((BASE / 'data' / 'dataset' / 'rouge_results.json').read_text())
+BASE = Path(__file__).resolve().parent.parent
+try:
+    RES = json.loads((BASE / 'data' / 'dataset' / 'rouge_results.json').read_text())
+except (FileNotFoundError, json.JSONDecodeError):
+    RES = {}
 
 COMP = BASE / 'UAS_Model' / 'Comparison_model.ipynb'
 SIG = BASE / 'UAS_Model' / 'Signature_model.ipynb'
@@ -24,6 +27,17 @@ def set_src(cell, text):
 def set_stream(cell, text, ec=1):
     cell['outputs'] = [{'name': 'stdout', 'output_type': 'stream', 'text': [text]}]
     cell['execution_count'] = ec
+
+def _patch_cells(nb, old, new=''):
+    for cell in nb['cells']:
+        src = ''.join(cell.get('source', []))
+        cell['source'] = src.replace(old, new).splitlines(keepends=True)
+
+CLOUD_LOAD_TEXT = (
+    "print('Model: Groq cloud (llama-3.1-8b-instant)')\n"
+    "_chatbot = PRDChatbot()\n"
+    "print('Model siap.')\n"
+)
 
 # ---------- Comparison notebook ----------
 comp = load(COMP)
@@ -167,6 +181,14 @@ set_src(c7,
 "- Fine-tuning model untuk domain PRD\n"
 "- Evaluasi tambahan: BERTScore, LLM-as-a-judge")
 
+# Cloud-only: remove local-model references
+c_llm = find(comp, "print(f'Model LLM")
+if c_llm:
+    set_src(c_llm, "print('Model: Groq cloud (llama-3.1-8b-instant)')\n")
+_patch_cells(comp, ", template_key='master'", "")
+_patch_cells(comp, ", template_key='startup'", "")
+_patch_cells(comp, "config.LOCAL_MODEL_DIR", "")
+
 save(COMP, comp)
 print('Comparison_model.ipynb patched.')
 
@@ -249,15 +271,25 @@ set_src(sig7,
 " data/dataset/ (3 PDF)  800 chars     MiniLM-L6-v2    Vector store\n"
 "                                                      |\n"
 "[Input User] -> [Intent Detect] -> [RAG Retrieve] -> [Prompt] -> [LLM (Groq)] -> [PRD Output]\n"
-" \"Buat PRD...\"   generate/qna      Cari relevan    Konteks          3B cloud    PRD jadi\n"
+" \"Buat PRD...\"   generate/qna      Cari relevan    Konteks          8B cloud    PRD jadi\n"
 "```\n\n"
 "**Komponen:**\n"
 "- Data Ingestion: ekstrak teks PDF, chunking, embedding, ChromaDB\n"
 "- Retrieval: semantic search (RAG)\n"
 "- Intent Detection: bedakan pertanyaan vs generate\n"
-"- LLM: Groq cloud (`llama-3.2-3b-preview`)\n"
+"- LLM: Groq cloud (`llama-3.1-8b-instant`)\n"
 "- Evaluasi: ROUGE-1/2/L\n\n"
 "Pipeline ini identik dengan yang berjalan di backend FastAPI (`App/backend/main.py`) dan frontend React (`App/frontend/`).")
+
+# Cloud-only: remove local-model references
+c_load = find(sig, "if config.LOCAL_MODEL_DIR.exists()")
+if c_load:
+    set_src(c_load, CLOUD_LOAD_TEXT)
+_patch_cells(sig, "config.LLM_MODEL_NAME", "Groq cloud (llama-3.1-8b-instant)")
+_patch_cells(sig, "_get_device()", "")
+_patch_cells(sig, "Model/llama", "Groq cloud")
+_patch_cells(sig, ", template_key='master'", "")
+_patch_cells(sig, ", template_key='startup'", "")
 
 save(SIG, sig)
 print('Signature_model.ipynb patched.')

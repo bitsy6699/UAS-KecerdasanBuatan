@@ -145,14 +145,14 @@ Sesuai ketentuan (minimal 2 pendekatan untuk dibandingkan), dibandingkan dua pen
 
 | Pendekatan | Peran | Deskripsi | Komponen |
 |------------|-------|-----------|----------|
-| **RAG** | **Model Utama** (`UAS_Model/Signature_model.ipynb`) | LLM generate PRD **dengan** konteks dari *retrieval* | Groq cloud (3B) / Llama 3.2 1B + ChromaDB + Embedding |
-| **Tanpa RAG** | **Model Pembanding** (`UAS_Model/Comparison_model.ipynb`) | LLM generate PRD **tanpa** konteks eksternal (direct prompt) | Groq cloud (3B) / Llama 3.2 1B (tanpa retrieval) |
+| **RAG** | **Model Utama** (`UAS_Model/Signature_model.ipynb`) | LLM generate PRD **dengan** konteks dari *retrieval* | Groq cloud (8B) / Llama 3.2 1B + ChromaDB + Embedding |
+| **Tanpa RAG** | **Model Pembanding** (`UAS_Model/Comparison_model.ipynb`) | LLM generate PRD **tanpa** konteks eksternal (direct prompt) | Groq cloud (8B) / Llama 3.2 1B (tanpa retrieval) |
 
 ### 6.2 Alasan Pemilihan
 
 **Llama 3.2 1B Instruct** (Grattafiori et al., 2024):
 - Model *open-source* dengan performa kompetitif untuk tugas instruksional.
-- Ukuran 1B parameter (mode lokal) memungkinkan inferensi di perangkat konsumen (CPU/MPS). Mode cloud menggunakan Groq API (3B, tanpa beban lokal).
+- Ukuran 1B parameter (mode lokal) memungkinkan inferensi di perangkat konsumen (CPU/MPS). Mode cloud menggunakan Groq API (8B, tanpa beban lokal).
 - Varian *Instruct* dioptimalkan untuk mengikuti instruksi.
 
 **RAG (Retrieval-Augmented Generation)** (Lewis et al., 2020):
@@ -173,7 +173,7 @@ prompt = "Buat PRD untuk aplikasi e-commerce"
 prd = cb.generate_prd(prompt)  # RAG: retrieve -> augment -> generate (cloud / lokal)
 ```
 
-*Pipeline* (cloud): `Query -> Embedding -> ChromaDB (top-3) -> Augment Prompt -> Groq API (3B) -> PRD`.
+*Pipeline* (cloud): `Query -> Embedding -> ChromaDB (top-3) -> Augment Prompt -> Groq API (8B) -> PRD`.
 *Pipeline* (lokal): `Query -> Embedding -> ChromaDB (top-3) -> Augment Prompt -> Llama 3.2 1B -> PRD`.
 
 **Model Pembanding — Tanpa RAG (`UAS_Model/Comparison_model.ipynb`):**
@@ -204,9 +204,9 @@ Kedua model menggunakan parameter generasi yang sama: `max_new_tokens=768`, `tem
                                                                 |
 [Template / Konteks] ---------------------------------------------> [Prompt Builder]
                                                                  |
-[Model Utama: Groq cloud (3B) / Llama 3.2 1B] <- [Augmented Prompt w/ Context]
+[Model Utama: Groq cloud (8B) / Llama 3.2 1B] <- [Augmented Prompt w/ Context]
                                      vs
-[Model Pembanding: Groq cloud (3B) / Llama 3.2 1B] <- [Prompt tanpa Context]
+[Model Pembanding: Groq cloud (8B) / Llama 3.2 1B] <- [Prompt tanpa Context]
          |                                              |
    [PRD Output - RAG]                          [PRD Output - No RAG]
          |                                              |
@@ -301,7 +301,7 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 | Kelebihan | Keterbatasan |
 |-----------|--------------|
 | PRD lebih kontekstual & relevan (RAG) | Dataset referensi terbatas (3 dokumen PDF) |
-| Pipeline modular & mudah dikustomisasi | Model lokal 1B memiliki kapasitas terbatas (cloud 3B lebih mumpuni) |
+| Pipeline modular & mudah dikustomisasi | Model lokal 1B memiliki kapasitas terbatas (cloud 8B lebih mumpuni) |
 | Referensi dapat diperbarui tanpa *retrain* | ROUGE tidak mengukur kualitas semantik penuh |
 | Template fleksibel (5 varian) | Waktu generasi RAG lebih lama (termasuk *retrieval*) |
 
