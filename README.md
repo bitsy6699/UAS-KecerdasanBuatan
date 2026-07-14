@@ -1,6 +1,41 @@
-```
->>> loehoer.ai — prd generator <<<
-```
+<p align="center">
+  <!-- Animated terminal SVG -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" width="760">
+    <defs>
+      <style>
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes scan  { 0%{transform:translateY(2px)} 100%{transform:translateY(196px)} }
+        @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+        @keyframes type  { 0%{clip-path:inset(0 100% 0 0)} 100%{clip-path:inset(0 0 0 0)} }
+        @keyframes glow  { 0%,100%{filter:drop-shadow(0 0 2px #d00)} 50%{filter:drop-shadow(0 0 8px #dc2626)} }
+        .glow { animation:glow 2s ease-in-out infinite }
+        .cursor { animation:blink .8s step-end infinite }
+        .scanline { animation:scan 4s linear infinite }
+        .type-text { animation:type 3s steps(40) forwards; white-space:nowrap; overflow:hidden }
+      </style>
+    </defs>
+    <!-- Background terminal -->
+    <rect x="0" y="0" width="760" height="220" rx="0" fill="#111" stroke="#dc2626" stroke-width="2"/>
+    <!-- Title bar -->
+    <rect x="2" y="2" width="756" height="32" fill="#1a1a1a"/>
+    <line x1="2" y1="34" x2="758" y2="34" stroke="#333" stroke-width="1"/>
+    <circle cx="22" cy="18" r="5" fill="#dc2626"/>
+    <circle cx="40" cy="18" r="5" fill="#555"/>
+    <circle cx="58" cy="18" r="5" fill="#555"/>
+    <text x="380" y="23" font-family="monospace" font-size="11" fill="#666" text-anchor="middle" letter-spacing="2">loehoer.ai — prd generator</text>
+    <!-- Main title -->
+    <text x="30" y="75" font-family="monospace" font-size="30" font-weight="800" fill="#dc2626" class="glow">&gt;&gt;&gt; loehoer.ai &mdash; prd generator &lt;&lt;&lt;</text>
+    <text x="30" y="105" font-family="monospace" font-size="13" fill="#888">─────────────────────────────────────────────────</text>
+    <!-- Info lines -->
+    <text x="30" y="135" font-family="monospace" font-size="14" fill="#e0e0e0">$ model: <tspan fill="#dc2626">groq cloud (llama-3.1-8b-instant)</tspan></text>
+    <text x="30" y="160" font-family="monospace" font-size="14" fill="#e0e0e0">$ rag  : <tspan fill="#dc2626">chromadb + miniml-l6-v2 — 7 pdf</tspan></text>
+    <text x="30" y="185" font-family="monospace" font-size="14" fill="#e0e0e0">$ eval : <tspan fill="#dc2626">rouge-1/2/l</tspan></text>
+    <!-- Blinking cursor -->
+    <rect x="234" y="173" width="9" height="16" fill="#dc2626" class="cursor" rx="0"/>
+    <!-- Scanline overlay -->
+    <rect x="2" y="2" width="756" height="2" fill="rgba(220,38,38,0.15)" class="scanline"/>
+  </svg>
+</p>
 
 <p align="center">
   <code>
@@ -9,21 +44,16 @@
 </p>
 
 <p align="center">
-  <img src="report/eda_dataset.png" alt="eda" width="640"/>
+  <sub>rizki dzulfikar al-qatiri (2406118) &amp; naupal nahban (2406119)</sub>
 </p>
 
-```
->>> kelompok: rizki dzulfikar al-qatiri (2406118) & naupal nahban (2406119)
->>> topik  : generasi prd otomatis dengan llm + rag, evaluasi rouge
-```
-
 ---
-  
+
 ```
 >>> ringkasan
 ```
 
-Pipeline **rag-based prd generator** — groq cloud (`llama-3.1-8b-instant`) + chromadb + rouge-1/2/l.
+Pipeline <span style="color:#dc2626">**rag-based prd generator**</span> — groq cloud (`llama-3.1-8b-instant`) + chromadb + rouge-1/2/l.
 
 ```
 pendekatan
@@ -32,7 +62,7 @@ pendekatan
 ```
 
 ---
-  
+
 ```
 >>> struktur
 ```
@@ -40,7 +70,7 @@ pendekatan
 ```
 uas-kecerdasanbuatan/
 ├── laporan_uas.md                # laporan uas (10 section)
-├── app/
+├── <span style="color:#dc2626">app</span>/
 │   ├── chatbot.py                # llm pipeline (groq cloud)
 │   ├── config.py                 # konfigurasi path & model
 │   ├── rag_builder.py            # build chromadb vectorstore
@@ -49,8 +79,8 @@ uas-kecerdasanbuatan/
 │   ├── backend/                  # fastapi
 │   └── frontend/                 # react — loehoer.ai
 ├── uas_model/
-│   ├── signature_model.ipynb     # dengan rag
-│   └── comparison_model.ipynb    # tanpa rag
+│   ├── signature_model.ipynb     # <span style="color:#dc2626">dengan rag</span>
+│   └── comparison_model.ipynb    # <span style="color:#dc2626">tanpa rag</span>
 ├── data/
 │   ├── dataset/                  # 7 pdf referensi
 │   └── jurnal/                   # 5 referensi jurnal
@@ -60,7 +90,7 @@ uas-kecerdasanbuatan/
 ```
 
 ---
-  
+
 ```
 >>> pipeline
 ```
@@ -72,7 +102,7 @@ pdf ──────▶ chunking ──────▶ embedding ────�
 ```
 
 ---
-  
+
 ```
 >>> quick start
 ```
@@ -94,15 +124,13 @@ $ jupyter notebook uas_model/signature_model.ipynb
 # 5. run notebook — model pembanding (tanpa rag)
 $ jupyter notebook uas_model/comparison_model.ipynb
 
-# 6. evaluasi rouge
-$ python3 app/evaluate_dataset.py
+# 6. evaluasi rouge   $ python3 app/evaluate_dataset.py
 
-# 7. patch notebook (inject hasil evaluasi)
-$ python3 app/patch_notebooks.py
+# 7. patch notebook   $ python3 app/patch_notebooks.py
 ```
 
 ---
-  
+
 ```
 >>> konfigurasi llm
 ```
@@ -121,7 +149,7 @@ llm_api_key=gsk_...
 ```
 
 ---
-  
+
 ```
 >>> hasil evaluasi
 ```
@@ -131,7 +159,7 @@ llm_api_key=gsk_...
 </p>
 
 ---
-  
+
 ```
 >>> referensi
 ```
