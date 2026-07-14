@@ -51,10 +51,51 @@ FIXES = [
     ("config.LLM_MODEL_NAME",   "Groq cloud (llama-3.1-8b-instant)"),
     ("_get_device()",           ""),
     ("print(f'Model LLM",       "print('Model: Groq cloud"),
+    ("ringan (1B param),",      "ringan (8B param),"),
 ]
+
+def remove_cells(nb, targets):
+    """Remove cells whose source contains any target string. Returns count."""
+    idxs = []
+    for i, c in enumerate(nb['cells']):
+        src = ''.join(c.get('source', []))
+        if any(t in src for t in targets):
+            idxs.append(i)
+    for i in sorted(idxs, reverse=True):
+        nb['cells'].pop(i)
+    return len(idxs)
 
 # ── Comparison ──────────────────────────────────────────────────────
 comp = load(COMP)
+
+# fix TEMPLATES reference in modeling code
+c_tmpl = find(comp, "TEMPLATES['startup']") or find(comp, 'TEMPLATES["startup"]')
+if c_tmpl:
+    src = ''.join(c_tmpl['source'])
+    src = src.replace("TEMPLATES['startup']['label']", "'Startup / MVP'")
+    src = src.replace('TEMPLATES["startup"]["label"]', "'Startup / MVP'")
+    c_tmpl['source'] = src.splitlines(keepends=True)
+
+# fix cell 11: replace local-model API with cloud-compatible code + clear stale outputs
+c11 = find(comp, '_chatbot.device')
+if c11:
+    set_src(c11,
+        "print('Model: Groq cloud (llama-3.1-8b-instant)')\n"
+        "_chatbot = PRDChatbot()\n"
+        "print('Model siap.')\n"
+        "\n"
+        "prompt = 'Buat PRD untuk aplikasi mobile laundry antar jemput'\n"
+        "\n"
+        "# --- Pendekatan 1: Tanpa RAG ---\n"
+        "print('\\n' + '='*60)\n"
+        "print('Pendekatan 1: Tanpa RAG')\n"
+        "print('='*60)\n"
+        "t0 = time.time()\n"
+        "hasil_no_rag = _chatbot.generate_no_rag(prompt)\n"
+        "print(f'Waktu: {time.time()-t0:.1f}s | {len(hasil_no_rag)} chars')\n"
+    )
+    c11['outputs'] = []
+    c11['execution_count'] = None
 
 c6 = find(comp, 'import pdfplumber')
 if c6 and RES:
@@ -169,6 +210,64 @@ if c_load:
         "_chatbot = PRDChatbot()\n"
         "print('Model siap.')\n"
     )
+
+# remove template demo cells & fix remaining template references
+remove_cells(sig, [
+    '### 5.2 Template PRD',
+    'Tersedia {len(TEMPLATES)}',
+    'Demo 1: Template Master',
+    'Demo 2: Template Startup',
+    'Demo 3: Template Mobile',
+    'Demo 4: Template Enterprise',
+    'Demo 5: Template Data',
+])
+
+# fix cell 0: remove 'template' from pipeline description
+cell0 = find(sig, 'menghasilkan PRD berdasarkan referensi + template')
+if cell0:
+    src = ''.join(cell0['source'])
+    cell0['source'] = src.replace('berdasarkan referensi + template', 'berdasarkan referensi').splitlines(keepends=True)
+
+# fix markdown: '5.4 Demo Generate PRD — 5 Template' → '5.4 Demo Generate PRD'
+cell16 = find(sig, '### 5.4 Demo Generate PRD')
+if cell16:
+    src = ''.join(cell16['source'])
+    src = src.replace('### 5.4 Demo Generate PRD — 5 Template', '### 5.4 Demo Generate PRD')
+    src = src.replace('Generate PRD menggunakan 5 template berbeda.', 'Generate PRD.')
+    cell16['source'] = src.splitlines(keepends=True)
+
+# fix streaming code: remove TEMPLATES reference
+cell23 = find(sig, 'Template: {TEMPLATES')
+if cell23:
+    src_lines = ''.join(cell23['source']).splitlines(keepends=True)
+    cell23['source'] = [l for l in src_lines if 'TEMPLATES' not in l]
+
+# insert 1 new demo cell after '### 5.4 Demo Generate PRD' markdown (only once)
+if not find(sig, '# Demo: Generate PRD'):
+    demo_md = find(sig, '### 5.4 Demo Generate PRD')
+    if demo_md:
+        idx = sig['cells'].index(demo_md)
+        sig['cells'].insert(idx + 1, {
+        'cell_type': 'code',
+        'source': [
+            "# Demo: Generate PRD\n",
+            "prompt = \"Buat PRD untuk aplikasi mobile laundry antar jemput\"\n",
+            "print(f'Prompt: \"{prompt}\"\\n')\n",
+            "\n",
+            "t0 = time.time()\n",
+            "hasil = generate_prd(prompt)\n",
+            "print(hasil)\n",
+            "print(f'\\n--- {time.time()-t0:.1f}s | {len(hasil)} chars ---')\n",
+        ],
+        'outputs': [],
+        'execution_count': None,
+    })
+
+# renumber sections (5.2 removed, so 5.3→5.2, 5.4→5.3, 5.5→5.4, 5.6→5.5)
+patch_cells(sig, '### 5.3 ', '### 5.2 ')
+patch_cells(sig, '### 5.4 ', '### 5.3 ')
+patch_cells(sig, '### 5.5 ', '### 5.4 ')
+patch_cells(sig, '### 5.6 ', '### 5.5 ')
 
 for old, new in FIXES:
     patch_cells(sig, old, new)

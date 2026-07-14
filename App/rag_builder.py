@@ -6,71 +6,6 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from App import config
 
-GDRIVE_FILES = [
-    ('1810W6mePvPXGTSHCE45lglP3u9Reu2Cu', 'pemodelan dfd.pdf'),
-    ('1agz4t1lDjCUyp4Oy7jKbKfxiC0ZcxEGU', 'Pengenalan UML.pptx'),
-    ('1QjnoTOFR_SuzjEZa2kNgSjau0qRweXMj', 'Pengujian Perangkat Lunak.pptx'),
-    ('1uBO-_lTJ_6SUwIAJblxLPrQbE-9Nf_FT', 'Pertemuan 3.pptx'),
-    ('1Fry_p5MBfWFB1wigMssOwtY8xjNZpg7p', 'Pertemuan 5.pptx'),
-    ('1iQKsekVeoWqTuh5BjYzevWEKcUIEos5w', 'Scancafe Sistem Manajemen Cafe-Kel 5.pdf'),
-    ('1YjPvkq14klPlDocDfmtf60DfLaukAhpD', 'Sistem Absensi Mahasiswa.pdf'),
-    ('1eOkq9-N5-POI7WKbIWi6NFbHc0DMTofp', 'Sistem Inventaris Gudang.pdf'),
-    ('1lozLev3i1bEectXiNdLk0xE5LyVXTyw4', 'Sistem Koperasi.pdf'),
-    ('1aXh7bPzuR-GR01r4w9fx1JIvhTqAqcM4', 'Sistem Manajemen Kelompok.pdf'),
-    ('1JkwnDnYyrW2kXoCSqWsHbqXB5mVxTM8K', 'Sistem Peminjaman alat camping.pdf'),
-    ('1DDDainD2wOpYQU-rnYPn-tUyr_5Z3lcx', '[EXAMPLE] PRD - Articles.pdf'),
-    ('1fmFX_H5cYo8T59KzvasC_-2Ovhfg7SYr', '[TEMPLATE] PRD - Articles.docx'),
-    # Data PRD baru dari user
-    ('183xk1WoFZ_TxCWyf8AYQbDiexyfIH6LT', 'PRD_Aplikasi_Pemesanan_Makanan.md'),
-    ('12iKmQt4EW9LcS_2I_X7myLp9-4LPdosm', 'PRD_Gerak_Aplikasi_Fitness.md'),
-    ('1sCp4SanFMYF41BoiXVIAKQiuv0UUT16s', 'PRD_Hijau_Aplikasi_Lingkungan.md'),
-    ('1MDBS4YQnIiPhUBZssq9ObI3-CNAi5ANc', 'PRD_Jalan_Aplikasi_Travel.md'),
-    ('1yGD44BPOoueLuKiC-GbmaJmHFHXUFshf', 'PRD_Pintar_Aplikasi_Edukasi.md'),
-    ('1-eThsJGu6mOu5JM85SMUwaw_4hMZUeEJ', 'PRD_Sakuku_Dompet_Digital.md'),
-    ('1kodMrLje2onQKTWr_R1cfn9Qg0CIHpXu', 'PRD_Sistem_Perpustakaan_Digital.md'),
-    ('1CJe8mGp0PrIde6mTOlif2gRbQ36aKTdq', 'PRD_Tenang_Aplikasi_Kesehatan_Mental.md'),
-    ('19_5EDoeL3vEHeZ8vFLMoGbd1h6sB-08y', 'Product Requirement Document.pdf'),
-]
-
-
-def _download_from_drive():
-    """Download all files from Google Drive folder."""
-    if config.TEMP_DRIVE_DIR.exists():
-        shutil.rmtree(config.TEMP_DRIVE_DIR)
-    config.TEMP_DRIVE_DIR.mkdir(parents=True, exist_ok=True)
-
-    try:
-        import gdown
-        print(f'Downloading from Google Drive (folder: {config.GDRIVE_FOLDER_ID})...')
-        gdown.download_folder(
-            id=config.GDRIVE_FOLDER_ID,
-            output=str(config.TEMP_DRIVE_DIR),
-            quiet=False,
-        )
-        print('Download selesai.')
-    except Exception as e:
-        print(f'gdown gagal ({e}), beralih ke requests fallback...')
-        import requests as req
-        for fid, fname in GDRIVE_FILES:
-            dest = config.TEMP_DRIVE_DIR / fname
-            if dest.exists():
-                continue
-            url = f'https://drive.usercontent.google.com/download?id={fid}&export=download'
-            print(f'  Downloading {fname}...')
-            try:
-                r = req.get(url, stream=True, timeout=30)
-                if r.status_code == 200:
-                    with open(dest, 'wb') as f:
-                        for chunk in r.iter_content(chunk_size=8192):
-                            f.write(chunk)
-                    print(f'    Saved {dest.stat().st_size:,} bytes')
-                else:
-                    print(f'    Failed: HTTP {r.status_code}')
-            except Exception as ex:
-                print(f'    Error: {ex}')
-        print('Download selesai (fallback).')
-
-
 EXCLUDE_PATTERNS = [
     'pertemuan 3',
     'pertemuan 5'
@@ -140,7 +75,7 @@ def build_vectorstore():
 
 
 def rebuild_vectorstore():
-    """Delete existing vectorstore and rebuild from Drive."""
+    """Delete existing vectorstore and rebuild from local dataset."""
     if config.VECTORSTORE_DIR.exists():
         shutil.rmtree(config.VECTORSTORE_DIR)
         print('Existing vectorstore deleted.')

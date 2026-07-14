@@ -179,10 +179,10 @@ prd = cb.generate_prd(prompt)  # RAG: retrieve -> augment -> generate (cloud)
 
 ```python
 messages = [
-    {"role": "system", "content": f'{TEMPLATES["startup"]["label"]}\n\nBUAT PRD BERDASARKAN PENGETAHUAN ANDA SENDIRI.'},
+    {"role": "system", "content": f"{TEMPLATE_LABEL}\n\nBUAT PRD BERDASARKAN PENGETAHUAN ANDA SENDIRI."},
     {"role": "user",   "content": prompt},
 ]
-# tokenize -> model.generate(...) tanpa retrieval
+hasil_no_rag = _chatbot.generate_no_rag(prompt)  # langsung via Groq cloud
 ```
 
 Kedua model menggunakan parameter generasi yang sama: `max_new_tokens=768`, `temperature=0.4`, `top_p=0.9`, `repetition_penalty=1.05`, `do_sample=True`.
@@ -334,7 +334,7 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 | PRD lebih kontekstual & relevan (RAG) | Dataset referensi terbatas (7 dokumen PDF) |
 | Pipeline modular & mudah dikustomisasi | Cloud API memerlukan koneksi internet |
 | Referensi dapat diperbarui tanpa *retrain* | ROUGE tidak mengukur kualitas semantik penuh |
-| Template fleksibel (5 varian) | Waktu generasi RAG lebih lama (termasuk *retrieval*) |
+| Template tunggal (Startup / MVP) | Waktu generasi RAG lebih lama (termasuk *retrieval*) |
 
 ### 8.4 Rekomendasi Perbaikan
 
@@ -381,4 +381,4 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 - **ChromaDB**: *vector store* (basis pengetahuan RAG)
 - **Visualisasi ROUGE**: `data/dataset/rouge_comparison.png` (dihasilkan `App/evaluate_dataset.py`)
 - **Visualisasi EDA**: `data/dataset/eda_dataset.png` (dihasilkan `App/evaluate_dataset.py`)
-- **Contoh Output**: `output/prd_rag_buat_prd_lengkap_untuk_sistem_absensi_mahasiswa.md`
+- **Contoh Output**: `output/prd_rag_buat_prd_lengkap_untuk_sistem_absensi_ma.md`

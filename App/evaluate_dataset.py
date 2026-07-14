@@ -16,7 +16,7 @@ import pdfplumber
 from rag_builder import rebuild_vectorstore
 from chatbot import PRDChatbot
 
-# 1) Rebuild vectorstore murni dari 3 PDF di data/dataset/
+# 1) Rebuild vectorstore murni dari 7 PDF di data/dataset/
 if config.VECTORSTORE_DIR.exists():
     shutil.rmtree(config.VECTORSTORE_DIR)
 vs = rebuild_vectorstore()

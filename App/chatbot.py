@@ -13,28 +13,7 @@ except ImportError:
     _HAS_OPENAI = False
 
 
-TEMPLATES = {
-    'master': {
-        'label': 'Formal Akademis',
-        'desc': 'PRD formal untuk tugas kuliah, TA, atau proyek akademik — berisi UML, wireframe, jadwal implementasi'
-    },
-    'startup': {
-        'label': 'Startup / MVP',
-        'desc': 'Ringkas, fokus ke hipotesis, validasi cepat, dan core features — cocok untuk produk baru yang mau di-launch'
-    },
-    'mobile': {
-        'label': 'Mobile App',
-        'desc': 'Spesifik untuk aplikasi mobile — platform, offline, push notif, navigasi, dan strategi rilis app store'
-    },
-    'enterprise': {
-        'label': 'Enterprise / Fitur Internal',
-        'desc': 'Untuk fitur di sistem enterprise — integrasi, compliance, SLA, stakeholder internal, dan rollout bertahap'
-    },
-    'data': {
-        'label': 'Data & Analytics',
-        'desc': 'Produk data — pipeline, metrik, dashboard, data quality, dan infrastruktur analitik'
-    }
-}
+TEMPLATE_LABEL = 'Startup / MVP'
 
 def _detect_intent(user_input: str) -> str:
     input_lower = user_input.lower()
@@ -236,7 +215,7 @@ class PRDChatbot:
 
     def generate_no_rag(self, prompt: str) -> str:
         messages = [
-            {'role': 'system', 'content': f"{TEMPLATES['startup']['label']}\n\nBUAT PRD BERDASARKAN PENGETAHUAN ANDA SENDIRI."},
+            {'role': 'system', 'content': f"{TEMPLATE_LABEL}\n\nBUAT PRD BERDASARKAN PENGETAHUAN ANDA SENDIRI."},
             {'role': 'user', 'content': prompt},
         ]
         result = self._generate_cloud(messages)

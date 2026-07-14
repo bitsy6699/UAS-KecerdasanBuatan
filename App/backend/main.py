@@ -10,7 +10,7 @@ _proj_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 sys.path.insert(0, _proj_root)
 sys.path.insert(0, os.path.join(_proj_root, 'App'))
 
-from chatbot import PRDChatbot, TEMPLATES
+from chatbot import PRDChatbot, TEMPLATE_LABEL
 
 
 sessions: dict[str, dict] = {}
@@ -55,10 +55,7 @@ class StopRequest(BaseModel):
 
 @app.get("/api/templates")
 def get_templates():
-    return {
-        k: {"label": v["label"], "desc": v["desc"]}
-        for k, v in TEMPLATES.items()
-    }
+    return {"startup": {"label": TEMPLATE_LABEL, "desc": "PRD berdasarkan pengetahuan model"}}
 
 
 @app.post("/api/chat")
