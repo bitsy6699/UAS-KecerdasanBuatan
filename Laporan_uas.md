@@ -379,6 +379,6 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 - **Dataset referensi**: `data/dataset/` (7 dokumen PDF)
 - **Jurnal referensi**: `data/Jurnal/` (5 PDF)
 - **ChromaDB**: *vector store* (basis pengetahuan RAG)
-- **Visualisasi ROUGE**: `data/dataset/rouge_comparison.png`
-- **Visualisasi EDA**: `data/dataset/eda_dataset.png`
-- **Contoh Output**: `output/prd_frozen_food_b2b.md`
+- **Visualisasi ROUGE**: `data/dataset/rouge_comparison.png` (dihasilkan `App/evaluate_dataset.py`)
+- **Visualisasi EDA**: `data/dataset/eda_dataset.png` (dihasilkan `App/evaluate_dataset.py`)
+- **Contoh Output**: `output/prd_rag_buat_prd_lengkap_untuk_sistem_absensi_mahasiswa.md`

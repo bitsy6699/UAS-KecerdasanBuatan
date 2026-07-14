@@ -10,8 +10,8 @@ dist/
 *.h5
 *.bin
 vectorstore/
-Model/llama/
 
 # Generated / tidak perlu di-push:
-output/
-
+App/assets.png
+data/dataset/*.png
+data/dataset/rouge_results.json
