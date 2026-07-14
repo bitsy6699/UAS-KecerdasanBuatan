@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.DS_Store
+venv/
+.venv/
+node_modules/
+dist/
+*.pth
+*.h5
+*.bin
+vectorstore/
+Model/llama/
+
+# Folder berikut dikecualikan dari push (batas ukuran GitHub):
+App/
+Model/
+Panduan_UAS_KecerdasanBuatan.md
+output/
