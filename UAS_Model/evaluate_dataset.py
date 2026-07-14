@@ -14,7 +14,7 @@ from rouge_score import rouge_scorer
 import pdfplumber
 
 from rag_builder import rebuild_vectorstore
-from chatbot import PRDChatbot, TEMPLATES
+from chatbot import PRDChatbot
 
 # 1) Rebuild vectorstore murni dari 3 PDF di data/dataset/
 if config.VECTORSTORE_DIR.exists():
@@ -22,7 +22,7 @@ if config.VECTORSTORE_DIR.exists():
 vs = rebuild_vectorstore()
 print(f'Vectorstore ready: {bool(vs)}')
 
-# 2) Load model (Llama 3.2 1B)
+# 2) Load chatbot (cloud API atau lokal)
 chatbot = PRDChatbot()
 
 raw_dir = BASE_DIR / 'data' / 'dataset'
@@ -52,22 +52,13 @@ def evaluate_rouge(hypothesis, reference):
         'rougeL': {'P': s['rougeL'].precision, 'R': s['rougeL'].recall, 'F1': s['rougeL'].fmeasure},
     }
 
-def gen_no_rag(prompt):
-    messages = [
-        {'role': 'system', 'content': f"{TEMPLATES['startup']['label']}\n\nBUAT PRD BERDASARKAN PENGETAHUAN ANDA SENDIRI."},
-        {'role': 'user', 'content': prompt},
-    ]
-    p = chatbot.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    inp = chatbot.tokenizer(p, return_tensors='pt', truncation=True, max_length=config.MAX_INPUT_TOKENS).to(chatbot.device)
-    out = chatbot.model.generate(**inp, max_new_tokens=config.MAX_OUTPUT_TOKENS, temperature=0.4, top_p=0.9, repetition_penalty=1.05, do_sample=True)
-    return chatbot.tokenizer.decode(out[0][inp.input_ids.shape[1]:], skip_special_tokens=True).strip() or '[Tidak ada output]'
 
 print('\nEvaluasi ROUGE: Tanpa RAG vs Dengan RAG (per sistem)\n')
 RESULTS = {}
 for name, fname, prompt in SYSTEMS:
     ref_text = _read_pdf_text(raw_dir / fname)
     t0 = time.time()
-    hasil_no_rag = gen_no_rag(prompt)
+    hasil_no_rag = chatbot.generate_no_rag(prompt)
     t_no = time.time() - t0
     t0 = time.time()
     hasil_rag = chatbot.generate_prd(prompt)

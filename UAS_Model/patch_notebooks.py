@@ -63,14 +63,7 @@ set_src(c6,
 "for name, fname, prompt in SYSTEMS:\n"
 "    ref_text = _read_ref(raw_dir / fname)\n"
 "    # --- Tanpa RAG ---\n"
-"    messages = [\n"
-"        {'role': 'system', 'content': f\"{TEMPLATES['startup']['label']}\\n\\nBUAT PRD BERDASARKAN PENGETAHUAN ANDA SENDIRI.\"},\n"
-"        {'role': 'user', 'content': prompt},\n"
-"    ]\n"
-"    p = _chatbot.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)\n"
-"    inp = _chatbot.tokenizer(p, return_tensors='pt', truncation=True, max_length=config.MAX_INPUT_TOKENS).to(_chatbot.device)\n"
-"    out = _chatbot.model.generate(**inp, max_new_tokens=config.MAX_OUTPUT_TOKENS, temperature=0.4, top_p=0.9, repetition_penalty=1.05, do_sample=True)\n"
-"    hasil_no_rag = _chatbot.tokenizer.decode(out[0][inp.input_ids.shape[1]:], skip_special_tokens=True).strip() or '[Tidak ada output]'\n"
+"    hasil_no_rag = _chatbot.generate_no_rag(prompt)\n"
 "    # --- Dengan RAG ---\n"
 "    hasil_rag = _chatbot.generate_prd(prompt)\n\n"
 "    s_no = evaluate_rouge(hasil_no_rag, ref_text)\n"
@@ -236,7 +229,17 @@ sig6code['source'] = src.splitlines(keepends=True)
 sig6code['outputs'] = []
 sig6code['execution_count'] = None
 
-# 4) §7 ringkasan markdown
+# 4) Fix generate_prd & generate_streaming — hapus template_key
+sig_fn = find(sig, 'def generate_prd(user_input, template_key')
+if sig_fn:
+    src_fn = ''.join(sig_fn['source'])
+    src_fn = src_fn.replace('def generate_prd(user_input, template_key=\'master\'):\n    return _get_chatbot().generate_prd(user_input, template_key=template_key)',
+                            'def generate_prd(user_input):\n    return _get_chatbot().generate_prd(user_input)')
+    src_fn = src_fn.replace('def generate_streaming(user_input, template_key=\'master\'):\n    cb = _get_chatbot()\n    cb.generate_prd_async(user_input, template_key=template_key)',
+                            'def generate_streaming(user_input):\n    cb = _get_chatbot()\n    cb.generate_prd_async(user_input)')
+    sig_fn['source'] = src_fn.splitlines(keepends=True)
+
+# 5) §7 ringkasan markdown
 sig7 = find(sig, 'data/dataset/*.md    800 chars')
 set_src(sig7,
 "---\n"
@@ -245,16 +248,14 @@ set_src(sig7,
 "[Data Mentah]  -> [Chunking]  -> [Embedding] -> [ChromaDB]\n"
 " data/dataset/ (3 PDF)  800 chars     MiniLM-L6-v2    Vector store\n"
 "                                                      |\n"
-"[Input User] -> [Intent Detect] -> [RAG Retrieve] -> [Prompt + Template] -> [LLM] -> [PRD Output]\n"
-" \"Buat PRD...\"   generate/qna      Cari relevan    Referensi+Template    Llama    PRD jadi\n"
-"                                                      3.2 1B\n"
+"[Input User] -> [Intent Detect] -> [RAG Retrieve] -> [Prompt] -> [LLM (Groq)] -> [PRD Output]\n"
+" \"Buat PRD...\"   generate/qna      Cari relevan    Konteks          3B cloud    PRD jadi\n"
 "```\n\n"
 "**Komponen:**\n"
 "- Data Ingestion: ekstrak teks PDF, chunking, embedding, ChromaDB\n"
 "- Retrieval: semantic search (RAG)\n"
 "- Intent Detection: bedakan pertanyaan vs generate\n"
-"- Template: 5 pilihan (master, startup, mobile, enterprise, data)\n"
-"- LLM: Llama 3.2 1B Instruct\n"
+"- LLM: Groq cloud (`llama-3.2-3b-preview`)\n"
 "- Evaluasi: ROUGE-1/2/L\n\n"
 "Pipeline ini identik dengan yang berjalan di backend FastAPI (`App/backend/main.py`) dan frontend React (`App/frontend/`).")
 

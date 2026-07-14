@@ -3,7 +3,7 @@
 ## UAS Kecerdasan Buatan — Text Generation PRD dengan ROUGE Evaluation
 
 ### Topik
-Generasi Product Requirements Document (PRD) Otomatis Menggunakan Large Language Model (Llama 3.2 1B Instruct) dengan Evaluasi ROUGE.
+Generasi Product Requirements Document (PRD) Otomatis Menggunakan LLM (Llama via Groq cloud / lokal) dengan Evaluasi ROUGE.
 
 ### Struktur File UAS
 
@@ -37,7 +37,32 @@ jupyter notebook UAS_Model/Signature_model.ipynb     # Model Utama (RAG)
 jupyter notebook UAS_Model/Comparison_model.ipynb   # Model Pembanding (Tanpa RAG)
 ```
 
-> **Catatan:** Notebook mengimpor modul `App/` dan membutuhkan model `Model/` (keduanya **tidak diikutsertakan** dalam repositori ini karena batas ukuran GitHub). Hasil evaluasi ROUGE sudah dicatat lengkap di `Laporan_uas.md`.
+> **Catatan:** Notebook mengimpor modul `App/` dan membutuhkan chromaDB `Model/` (keduanya **tidak diikutsertakan** dalam repositori ini karena batas ukuran GitHub). Hasil evaluasi ROUGE sudah dicatat lengkap di `Laporan_uas.md`.
+> 
+> **LLM Backend:** Secara default generasi PRD menggunakan **Groq API (cloud)** — laptop tidak panas, model ~3B. Untuk fallback lokal (tanpa internet), set `LLM_BACKEND=local` (lihat `.env.example`).
+
+### Konfigurasi LLM Backend
+
+Pipeline mendukung dua mode LLM:
+
+| Variabel | Default | Deskripsi |
+|----------|---------|-----------|
+| `LLM_BACKEND` | `cloud` | `cloud` (Groq) atau `local` (PyTorch) |
+| `LLM_API_BASE` | `https://api.groq.com/openai/v1` | Endpoint OpenAI-compatible |
+| `LLM_API_KEY` | — | API key (dapatkan di [console.groq.com](https://console.groq.com/keys)) |
+| `LLM_API_MODEL` | `llama-3.2-3b-preview` | Model ID (Groq: 3b, 8b, 70b) |
+
+**Setup:**
+```bash
+pip install -r requirements-cloud.txt
+cp .env.example .env
+# Isi LLM_API_KEY di .env (jangan commit)
+```
+
+**Mode lokal** (tanpa internet):
+- Set `LLM_BACKEND=local` di `.env`
+- Pastikan model ada di `Model/llama/` (Llama 3.2 1B)
+- Jalankan notebook seperti biasa (laptop akan panas)
 
 ### Referensi
 - Lewis et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.
