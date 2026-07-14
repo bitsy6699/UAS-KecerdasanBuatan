@@ -1,139 +1,146 @@
-<p align="center">
-  <img src="report/eda_dataset.png" alt="EDA Dataset" width="600"/>
-</p>
-
-<h1 align="center">
-  📄 UAS Kecerdasan Buatan
-</h1>
+```
+>>> loehoer.ai — prd generator <<<
+```
 
 <p align="center">
-  <b>Generasi Product Requirements Document (PRD) Otomatis</b>
-  —
-  LLM + Retrieval-Augmented Generation + Evaluasi ROUGE
+  <code>
+  [<span style="color:#dc2626">rag</span>] [<span style="color:#dc2626">llm</span>] [<span style="color:#dc2626">rouge</span>] [<span style="color:#dc2626">fastapi</span>] [<span style="color:#dc2626">react</span>]
+  </code>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/LLM-Llama_3.1_8B_(Groq_Cloud)-4ade80?style=flat-square" alt="LLM"/>
-  <img src="https://img.shields.io/badge/Embedding-MiniLM_L6_v2-60a5fa?style=flat-square" alt="Embedding"/>
-  <img src="https://img.shields.io/badge/RAG-ChromaDB-fbbf24?style=flat-square" alt="RAG"/>
-  <img src="https://img.shields.io/badge/Evaluasi-ROUGE_1_2_L-f472b6?style=flat-square" alt="ROUGE"/>
-  <img src="https://img.shields.io/badge/Backend-FastAPI-22c55e?style=flat-square" alt="FastAPI"/>
-  <img src="https://img.shields.io/badge/Frontend-React-3b82f6?style=flat-square" alt="React"/>
+  <img src="report/eda_dataset.png" alt="eda" width="640"/>
 </p>
 
-<p align="center">
-  <b>👤 Kelompok:</b>
-  Rizki Dzulfikar Al-Qatiri (2406118) &amp; Naupal Nahban (2406119)
-</p>
-
----
-
-## 🎯 Ringkasan Proyek
-
-Pipeline **RAG-based PRD Generator** yang memanfaatkan **Groq cloud (`llama-3.1-8b-instant`)** untuk menghasilkan Product Requirements Document secara otomatis berdasarkan 7 dokumen referensi PDF. Kualitas output dievaluasi menggunakan metrik **ROUGE-1/2/L**.
-
-> **Dua pendekatan yang dibandingkan:**
-> - 🅰️ **Tanpa RAG** — direct prompt, ngandalin pengetahuan internal LLM
-> - 🅱️ **Dengan RAG** — retrieval dari ChromDB + konteks dokumen — **Model Utama**
-
----
-
-## 🧱 Arsitektur
-
 ```
-UAS-KecerdasanBuatan/
-├── 📄 Laporan_uas.md               # Laporan UAS lengkap (10 section)
-├── ⚙️ App/                          # Python source
-│   ├── chatbot.py                  # LLM pipeline (Groq cloud)
-│   ├── config.py                   # Konfigurasi path & model
-│   ├── rag_builder.py              # Build ChromaDB vectorstore
-│   ├── evaluate_dataset.py         # Evaluasi ROUGE (7 PDF)
-│   ├── patch_notebooks.py          # Patch notebook: fix + inject
-│   ├── backend/                    # FastAPI backend 🚀
-│   └── frontend/                   # React frontend ⚛️
-├── 📓 UAS_Model/
-│   ├── Signature_model.ipynb       # Model Utama (Dengan RAG)
-│   └── Comparison_model.ipynb      # Model Pembanding (Tanpa RAG)
-├── 📚 data/
-│   ├── dataset/                    # 7 PDF referensi + hasil evaluasi
-│   └── Jurnal/                     # 5 referensi jurnal
-├── 📂 output/                      # PRD hasil generate (ter-track)
-└── 📦 requirements-cloud.txt
+>>> kelompok: rizki dzulfikar al-qatiri (2406118) & naupal nahban (2406119)
+>>> topik  : generasi prd otomatis dengan llm + rag, evaluasi rouge
 ```
 
 ---
+  
+```
+>>> ringkasan
+```
 
-## 🚀 Pipeline
+Pipeline **rag-based prd generator** — groq cloud (`llama-3.1-8b-instant`) + chromadb + rouge-1/2/l.
 
 ```
-┌────────────────────┐     ┌────────────────────┐     ┌──────────────────────┐
-│   Data Preparation │ ──▶ │     Modeling       │ ──▶ │  ROUGE Evaluation    │
-│   Chunking (800)   │     │  Tanpa RAG / RAG   │     │  ROUGE-1, ROUGE-2,   │
-│   Embedding (MiniLM)│     │  2 pendekatan      │     │  ROUGE-L             │
-│   ChromDB          │     │                    │     │  + Visualisasi       │
-└────────────────────┘     └────────────────────┘     └──────────────────────┘
+pendekatan
+  ├── [a] tanpa rag    → direct prompt, pengetahuan internal llm
+  └── [b] dengan rag   → retrieval dari chromadb + konteks 7 pdf — model utama
 ```
 
 ---
+  
+```
+>>> struktur
+```
 
-## ⚡ Quick Start
+```
+uas-kecerdasanbuatan/
+├── laporan_uas.md                # laporan uas (10 section)
+├── app/
+│   ├── chatbot.py                # llm pipeline (groq cloud)
+│   ├── config.py                 # konfigurasi path & model
+│   ├── rag_builder.py            # build chromadb vectorstore
+│   ├── evaluate_dataset.py       # evaluasi rouge 7 pdf
+│   ├── patch_notebooks.py        # patch notebook + inject output
+│   ├── backend/                  # fastapi
+│   └── frontend/                 # react — loehoer.ai
+├── uas_model/
+│   ├── signature_model.ipynb     # dengan rag
+│   └── comparison_model.ipynb    # tanpa rag
+├── data/
+│   ├── dataset/                  # 7 pdf referensi
+│   └── jurnal/                   # 5 referensi jurnal
+├── output/                       # prd hasil generate (tracked)
+├── report/                       # gambar evaluasi + rouge_results.json
+└── requirements-cloud.txt
+```
+
+---
+  
+```
+>>> pipeline
+```
+
+```
+            800 chars               chromadb                rouge-1
+pdf ──────▶ chunking ──────▶ embedding ──────▶ generate ──────▶ score
+            7 docs                miniml                groq llm     rouge-l
+```
+
+---
+  
+```
+>>> quick start
+```
 
 ```bash
-# 1. Install dependensi
-pip install -r requirements-cloud.txt
+# 1. install
+$ pip install -r requirements-cloud.txt
 
-# 2. Setup API key Groq
-cp .env.example .env
-# → Isi LLM_API_KEY di .env (dapet dari https://console.groq.com/keys)
+# 2. api key
+$ cp .env.example .env
+$ # isi llm_api_key (https://console.groq.com/keys)
 
-# 3. Bangun vectorstore dari 7 PDF referensi
-python3 -m App.rag_builder
+# 3. build vectorstore
+$ python3 -m app.rag_builder
 
-# 4. Jalanin notebook
-jupyter notebook UAS_Model/Signature_model.ipynb      # Model Utama (RAG)
-jupyter notebook UAS_Model/Comparison_model.ipynb     # Model Pembanding
+# 4. run notebook — model utama (rag)
+$ jupyter notebook uas_model/signature_model.ipynb
 
-# 5. Evaluasi ROUGE otomatis
-python3 App/evaluate_dataset.py
+# 5. run notebook — model pembanding (tanpa rag)
+$ jupyter notebook uas_model/comparison_model.ipynb
 
-# 6. Patch notebook (update markdown + inject hasil)
-python3 App/patch_notebooks.py
+# 6. evaluasi rouge
+$ python3 app/evaluate_dataset.py
+
+# 7. patch notebook (inject hasil evaluasi)
+$ python3 app/patch_notebooks.py
 ```
 
 ---
+  
+```
+>>> konfigurasi llm
+```
 
-## 🔧 Konfigurasi LLM
+| variable      | default                                         | deskripsi         |
+|---------------|-------------------------------------------------|-------------------|
+| `llm_backend` | `cloud`                                         | groq cloud        |
+| `llm_api_base`| `https://api.groq.com/openai/v1`                | endpoint          |
+| `llm_api_key` | `—`                                             | api key           |
+| `llm_api_model`| `llama-3.1-8b-instant`                        | model id groq     |
 
-| Variabel | Default | Deskripsi |
-|----------|---------|-----------|
-| `LLM_BACKEND` | `cloud` | Groq cloud (satu-satunya mode 🎯) |
-| `LLM_API_BASE` | `https://api.groq.com/openai/v1` | Endpoint OpenAI-compatible |
-| `LLM_API_KEY` | — | API key ([console.groq.com](https://console.groq.com/keys)) |
-| `LLM_API_MODEL` | `llama-3.1-8b-instant` | Model ID Groq |
-
-**Contoh `.env`:**
-```env
-LLM_BACKEND=cloud
-LLM_API_KEY=gsk_...
+`.env`:
+```
+llm_backend=cloud
+llm_api_key=gsk_...
 ```
 
 ---
-
-## 📊 Hasil Evaluasi
+  
+```
+>>> hasil evaluasi
+```
 
 <p align="center">
-  <img src="report/rouge_comparison.png" alt="ROUGE Comparison" width="700"/>
+  <img src="report/rouge_comparison.png" alt="rouge" width="700"/>
 </p>
 
 ---
+  
+```
+>>> referensi
+```
 
-## 📖 Referensi
-
-| # | Paper |
-|---|-------|
-| 1 | Lewis et al. (2020). *Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks* |
-| 2 | Lin (2004). *ROUGE: A Package for Automatic Evaluation of Summaries* |
-| 3 | Grattafiori et al. (2024). *The Llama 3 Herd of Models* |
-| 4 | Kumar et al. (2024). *ROUGE-SS: A New ROUGE Variant* |
-| 5 | Liu et al. (2024). *How Reliable Are Automatic Evaluation Methods* |
-| 6 | Tanwir et al. (2026). *RAG LLM-Based Chatbot for Stunting Prevention* |
+```
+ 1 │ lewis et al. (2020) — retrieval-augmented generation for knowledge-intensive nlp tasks
+ 2 │ lin (2004)         — rouge: a package for automatic evaluation of summaries
+ 3 │ grattafiori et al. (2024) — the llama 3 herd of models
+ 4 │ kumar et al. (2024) — rouge-ss: a new rouge variant
+ 5 │ liu et al. (2024)  — how reliable are automatic evaluation methods
+ 6 │ tanwir et al. (2026) — rag llm-based chatbot for stunting prevention
+```
