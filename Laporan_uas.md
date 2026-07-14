@@ -55,7 +55,7 @@ Dalam literatur, *Retrieval-Augmented Generation* (RAG) terbukti meningkatkan ku
 
 Data yang digunakan adalah dokumen PRD referensi:
 
-- **`data/dataset/`** — 7 dokumen PDF yang dipindah dari Google Drive: *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang*, *Sistem Absensi Mahasiswa*, *Sistem Manajemen Kelompok*, *Sistem Peminjaman Alat Camping*, dan *Product Requirement Document* (dijadikan basis pengetahuan RAG dan referensi ROUGE).
+- **`report/`** — 7 dokumen PDF yang dipindah dari Google Drive: *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang*, *Sistem Absensi Mahasiswa*, *Sistem Manajemen Kelompok*, *Sistem Peminjaman Alat Camping*, dan *Product Requirement Document* (dijadikan basis pengetahuan RAG dan referensi ROUGE).
 - **ChromaDB (*vector store*)** — hasil *embedding* dokumen referensi (basis pengetahuan RAG).
 - **`data/Jurnal/`** — 5 PDF jurnal referensi untuk landasan teori.
 
@@ -93,7 +93,7 @@ Karena proyek ini berupa *text generation* (bukan klasifikasi), EDA difokuskan p
 
 **Visualisasi 1 — Ukuran dan jumlah *chunk* per dokumen referensi.**
 
-![EDA Dataset](data/dataset/eda_dataset.png)
+![EDA Dataset](report/eda_dataset.png)
 
 *Gambar 1. Distribusi jumlah karakter dan jumlah chunk (chunk size 800, overlap 100) per dokumen PRD referensi. Dokumen berukuran 1.200–2.200 karakter, menghasilkan 2–4 chunk per dokumen.*
 
@@ -132,7 +132,7 @@ Setiap *chunk* diubah menjadi vektor 384 dimensi menggunakan **`sentence-transfo
 
 Data dibagi berdasarkan peran dokumen:
 
-- **Basis pengetahuan / *reference* (train)**: 7 dokumen PDF `data/dataset/` di-*embed* ke ChromaDB dan dijadikan acuan ROUGE.
+- **Basis pengetahuan / *reference* (train)**: 7 dokumen PDF `report/` di-*embed* ke ChromaDB dan dijadikan acuan ROUGE.
 - **Test / prompt**: prompt generasi PRD baru per domain (mis. "Buat PRD untuk aplikasi e-commerce"), yang dibandingkan dengan dokumen referensi domain yang sama.
 
 ---
@@ -286,7 +286,7 @@ Setiap metrik dihitung dalam tiga varian: **Precision** (proporsi output yang ad
 
 ### 7.3 Visualisasi Perbandingan
 
-![ROUGE Comparison](data/dataset/rouge_comparison.png)
+![ROUGE Comparison](report/rouge_comparison.png)
 
 *Gambar 2. Perbandingan ROUGE F1-score: Model Utama (RAG, hijau) vs Model Pembanding (Tanpa RAG, merah) pada ketujuh referensi.*
 
@@ -376,9 +376,9 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 
 - **Notebook Model Utama (RAG)**: `UAS_Model/Signature_model.ipynb`
 - **Notebook Model Pembanding (Tanpa RAG)**: `UAS_Model/Comparison_model.ipynb`
-- **Dataset referensi**: `data/dataset/` (7 dokumen PDF)
+- **Dataset referensi**: `report/` (7 dokumen PDF)
 - **Jurnal referensi**: `data/Jurnal/` (5 PDF)
 - **ChromaDB**: *vector store* (basis pengetahuan RAG)
-- **Visualisasi ROUGE**: `data/dataset/rouge_comparison.png` (dihasilkan `App/evaluate_dataset.py`)
-- **Visualisasi EDA**: `data/dataset/eda_dataset.png` (dihasilkan `App/evaluate_dataset.py`)
+- **Visualisasi ROUGE**: `report/rouge_comparison.png` (dihasilkan `App/evaluate_dataset.py`)
+- **Visualisasi EDA**: `report/eda_dataset.png` (dihasilkan `App/evaluate_dataset.py`)
 - **Contoh Output**: `output/prd_rag_buat_prd_lengkap_untuk_sistem_absensi_ma.md`

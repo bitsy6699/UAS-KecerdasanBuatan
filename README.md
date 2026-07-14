@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="data/dataset/eda_dataset.png" alt="EDA Dataset" width="600"/>
+  <img src="report/eda_dataset.png" alt="EDA Dataset" width="600"/>
 </p>
 
 <h1 align="center">
@@ -122,7 +122,7 @@ LLM_API_KEY=gsk_...
 ## 📊 Hasil Evaluasi
 
 <p align="center">
-  <img src="data/dataset/rouge_comparison.png" alt="ROUGE Comparison" width="700"/>
+  <img src="report/rouge_comparison.png" alt="ROUGE Comparison" width="700"/>
 </p>
 
 ---
