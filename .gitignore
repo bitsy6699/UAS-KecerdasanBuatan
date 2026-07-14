@@ -17,5 +17,3 @@ Model/
 Panduan_UAS_KecerdasanBuatan.md
 output/
 
-# Artifact hasil konversi PDF->MD (dataset bersumber PDF di data/dataset/)
-data/dataset/*.md

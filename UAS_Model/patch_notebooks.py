@@ -31,7 +31,7 @@ comp = load(COMP)
 # 1) §2 Data Understanding markdown
 c2 = find_id(comp, '90e26609')
 set_src(c2,
-"## 2. Data Understanding\n\n### Sumber Data\nDokumen referensi berupa **3 PDF dari Google Drive** yang disimpan di `data/dataset/`:\n- *Scancafe Sistem Manajemen Cafe-Kel 5.pdf*\n- *Sistem Koperasi.pdf*\n- *Sistem Inventaris Gudang.pdf*\n(Ketiganya dikonversi otomatis ke Markdown saat *ingestion*).\n\n### Deskripsi Data\n| Atribut | Deskripsi |\n|---------|-----------|\n| Judul | Nama dan domain sistem (cafe, koperasi, gudang) |\n| Ringkasan Eksekutif | Gambaran singkat produk |\n| Latar Belakang | Masalah yang dipecahkan |\n| Target Pengguna | Persona pengguna |\n| Fitur | Prioritas P0/P1/P2 |\n| Arsitektur | Tech stack yang digunakan |\n\n### Ukuran & Format\n- Format: PDF (`.pdf`) dari Google Drive, dikonversi ke Markdown (.md)\n- 3 dokumen PDF referensi lokal\n- ~113.000 total karakter (hasil konversi)")
+"## 2. Data Understanding\n\n### Sumber Data\nDokumen referensi berupa **3 PDF dari Google Drive** yang disimpan di `data/dataset/`:\n- *Scancafe Sistem Manajemen Cafe-Kel 5.pdf*\n- *Sistem Koperasi.pdf*\n- *Sistem Inventaris Gudang.pdf*\n(Teks diekstrak langsung dari PDF tanpa file `.md` perantara).\n\n### Deskripsi Data\n| Atribut | Deskripsi |\n|---------|-----------|\n| Judul | Nama dan domain sistem (cafe, koperasi, gudang) |\n| Ringkasan Eksekutif | Gambaran singkat produk |\n| Latar Belakang | Masalah yang dipecahkan |\n| Target Pengguna | Persona pengguna |\n| Fitur | Prioritas P0/P1/P2 |\n| Arsitektur | Tech stack yang digunakan |\n\n### Ukuran & Format\n- Format: PDF (`.pdf`) dari Google Drive, teks diekstrak langsung (tanpa `.md`)\n- 3 dokumen PDF referensi lokal\n- ~113.000 total karakter (hasil konversi)")
 
 # 2) Data Understanding code cell -> new output (3 files)
 du = find_id(comp, '9f12439b')
@@ -45,18 +45,23 @@ set_stream(du,
 # 3) §6 comparison code cell -> new per-system source + injected output
 c6 = find_id(comp, '86d4fe2b')
 set_src(c6,
+"import pdfplumber\n\n"
+"def _read_ref(path):\n"
+"    with pdfplumber.open(str(path)) as pdf:\n"
+"        pages = [p.extract_text() or '' for p in pdf.pages]\n"
+"    return '\\n\\n'.join(pages)\n\n"
 "SYSTEMS = [\n"
-"    ('Sistem Manajemen Cafe', 'Scancafe Sistem Manajemen Cafe-Kel 5.md',\n"
+"    ('Sistem Manajemen Cafe', 'Scancafe Sistem Manajemen Cafe-Kel 5.pdf',\n"
 "     'Buat PRD lengkap untuk sistem manajemen cafe'),\n"
-"    ('Sistem Koperasi', 'Sistem Koperasi.md',\n"
+"    ('Sistem Koperasi', 'Sistem Koperasi.pdf',\n"
 "     'Buat PRD lengkap untuk sistem koperasi'),\n"
-"    ('Sistem Inventaris Gudang', 'Sistem Inventaris Gudang.md',\n"
+"    ('Sistem Inventaris Gudang', 'Sistem Inventaris Gudang.pdf',\n"
 "     'Buat PRD lengkap untuk sistem inventaris gudang'),\n"
 "]\n\n"
 "print('Evaluasi ROUGE: Tanpa RAG vs Dengan RAG (per sistem)\\n')\n"
 "RESULTS = {}\n"
 "for name, fname, prompt in SYSTEMS:\n"
-"    ref_text = (raw_dir / fname).read_text()\n"
+"    ref_text = _read_ref(raw_dir / fname)\n"
 "    # --- Tanpa RAG ---\n"
 "    messages = [\n"
 "        {'role': 'system', 'content': f\"{TEMPLATES['startup']['label']}\\n\\nBUAT PRD BERDASARKAN PENGETAHUAN ANDA SENDIRI.\"},\n"
@@ -67,7 +72,7 @@ set_src(c6,
 "    out = _chatbot.model.generate(**inp, max_new_tokens=config.MAX_OUTPUT_TOKENS, temperature=0.4, top_p=0.9, repetition_penalty=1.05, do_sample=True)\n"
 "    hasil_no_rag = _chatbot.tokenizer.decode(out[0][inp.input_ids.shape[1]:], skip_special_tokens=True).strip() or '[Tidak ada output]'\n"
 "    # --- Dengan RAG ---\n"
-"    hasil_rag = _chatbot.generate_prd(prompt, template_key='startup')\n\n"
+"    hasil_rag = _chatbot.generate_prd(prompt)\n\n"
 "    s_no = evaluate_rouge(hasil_no_rag, ref_text)\n"
 "    s_rag = evaluate_rouge(hasil_rag, ref_text)\n"
 "    RESULTS[name] = {'no': s_no, 'rag': s_rag, 'ref_len': len(ref_text)}\n\n"
@@ -181,7 +186,7 @@ set_src(sig2,
 "---\n"
 "## 2. Data Ingestion — Vectorstore\n\n"
 "Membangun basis pengetahuan dari dokumen referensi:\n"
-"- **Dataset: 3 PDF dari Google Drive** (`data/dataset/`) — *Scancafe Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang* — dikonversi otomatis ke teks\n"
+"- **Dataset: 3 PDF dari Google Drive** (`data/dataset/`) — *Scancafe Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang* — teks diekstrak langsung dari PDF (tanpa `.md`)\n"
 "- Chunking 800 karakter per segmen\n"
 "- Embedding dengan all-MiniLM-L6-v2\n"
 "- Simpan di ChromaDB\n\n"
@@ -223,7 +228,10 @@ set_src(sig6, new6)
 sig6code = find(sig, "ref_files = sorted(raw_dir.glob('*.md'))")
 src = ''.join(sig6code['source'])
 src = src.replace("ref_files[:2]", "ref_files")
-src = src.replace("template_key='master'", "template_key='startup'")
+src = src.replace('*.md', '*.pdf')
+src = src.replace('template_key=\'master\'', '')
+src = src.replace('template_key=\'startup\'', '')
+src = src.replace('ref_text = rf.read_text()', 'import pdfplumber; ref_text = \'\\n\\n\'.join(p.extract_text() or \'\' for p in pdfplumber.open(str(rf)).pages)')
 sig6code['source'] = src.splitlines(keepends=True)
 sig6code['outputs'] = []
 sig6code['execution_count'] = None
@@ -242,7 +250,7 @@ set_src(sig7,
 "                                                      3.2 1B\n"
 "```\n\n"
 "**Komponen:**\n"
-"- Data Ingestion: konversi PDF, chunking, embedding, ChromaDB\n"
+"- Data Ingestion: ekstrak teks PDF, chunking, embedding, ChromaDB\n"
 "- Retrieval: semantic search (RAG)\n"
 "- Intent Detection: bedakan pertanyaan vs generate\n"
 "- Template: 5 pilihan (master, startup, mobile, enterprise, data)\n"

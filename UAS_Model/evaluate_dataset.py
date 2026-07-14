@@ -11,6 +11,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from rouge_score import rouge_scorer
+import pdfplumber
 
 from rag_builder import rebuild_vectorstore
 from chatbot import PRDChatbot, TEMPLATES
@@ -26,13 +27,19 @@ chatbot = PRDChatbot()
 
 raw_dir = BASE_DIR / 'data' / 'dataset'
 
-# Sistem -> (nama referensi, file .md hasil konversi PDF, prompt generasi)
+def _read_pdf_text(pdf_path: Path) -> str:
+    with pdfplumber.open(str(pdf_path)) as pdf:
+        pages = [p.extract_text() or '' for p in pdf.pages]
+    return '\n\n'.join(pages)
+
+
+# Sistem -> (nama referensi, file PDF referensi, prompt generasi)
 SYSTEMS = [
-    ('Sistem Manajemen Cafe', 'Scancafe Sistem Manajemen Cafe-Kel 5.md',
+    ('Sistem Manajemen Cafe', 'Scancafe Sistem Manajemen Cafe-Kel 5.pdf',
      'Buat PRD lengkap untuk sistem manajemen cafe'),
-    ('Sistem Koperasi', 'Sistem Koperasi.md',
+    ('Sistem Koperasi', 'Sistem Koperasi.pdf',
      'Buat PRD lengkap untuk sistem koperasi'),
-    ('Sistem Inventaris Gudang', 'Sistem Inventaris Gudang.md',
+    ('Sistem Inventaris Gudang', 'Sistem Inventaris Gudang.pdf',
      'Buat PRD lengkap untuk sistem inventaris gudang'),
 ]
 
@@ -58,12 +65,12 @@ def gen_no_rag(prompt):
 print('\nEvaluasi ROUGE: Tanpa RAG vs Dengan RAG (per sistem)\n')
 RESULTS = {}
 for name, fname, prompt in SYSTEMS:
-    ref_text = (raw_dir / fname).read_text()
+    ref_text = _read_pdf_text(raw_dir / fname)
     t0 = time.time()
     hasil_no_rag = gen_no_rag(prompt)
     t_no = time.time() - t0
     t0 = time.time()
-    hasil_rag = chatbot.generate_prd(prompt, template_key='startup')
+    hasil_rag = chatbot.generate_prd(prompt)
     t_rag = time.time() - t0
 
     s_no = evaluate_rouge(hasil_no_rag, ref_text)

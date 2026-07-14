@@ -76,7 +76,7 @@ Dokumen PRD memiliki struktur sebagai berikut:
 
 ### 3.3 Ukuran dan Format Data
 
-- **Format**: PDF (`.pdf`) dari Google Drive, dikonversi otomatis ke Markdown saat *ingestion*.
+- **Format**: PDF (`.pdf`) dari Google Drive, teks diekstrak langsung saat *ingestion* (tanpa file `.md` perantara).
 - **Jumlah dokumen referensi**: 7 dokumen PDF.
 - **Total karakter**: ~250.000 karakter hasil konversi PDF (lihat visualisasi EDA, Gambar 1).
 - **Setelah *chunking***: ~30–50 segmen per dokumen (800 karakter per segmen).
@@ -109,7 +109,7 @@ Karena proyek ini berupa *text generation* (bukan klasifikasi), EDA difokuskan p
 ### 5.1 Pembersihan Data
 
 - Filter pola eksklusi (mis. dokumen perkuliahan tidak relevan) pada tahap *build* *vector store*.
-- Konversi PDF/DOCX/PPTX ke teks Markdown (otomatis saat *ingestion*; terdapat 7 dokumen PDF dari Google Drive — *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang*, *Sistem Absensi Mahasiswa*, *Sistem Manajemen Kelompok*, *Sistem Peminjaman Alat Camping*, *Product Requirement Document* — yang dikonversi ke Markdown.
+- Ekstrak teks langsung dari PDF/DOCX/PPTX (tanpa file `.md` perantara; terdapat 7 dokumen PDF dari Google Drive — *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang*, *Sistem Absensi Mahasiswa*, *Sistem Manajemen Kelompok*, *Sistem Peminjaman Alat Camping*, *Product Requirement Document* — yang teksnya diekstrak lalu di-chunk).
 - Penghapusan dokumen duplikat/tidak relevan.
 
 ### 5.2 Chunking
