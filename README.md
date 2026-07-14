@@ -15,7 +15,7 @@ UAS-KecerdasanBuatan/
 │   ├── Signature_model.ipynb    # Model Utama (RAG)
 │   └── Comparison_model.ipynb   # Model Pembanding (Tanpa RAG)
 └── data/
-    ├── dataset/             # 3 dokumen PDF (Cafe/Koperasi/Gudang) dari Google Drive
+    ├── dataset/             # 7 dokumen PDF (Cafe/Koperasi/Gudang/Absensi/Kelompok/Peminjaman/ProductReq) dari Google Drive
     └── Jurnal/              # Referensi jurnal (5 PDF)
 ```
 

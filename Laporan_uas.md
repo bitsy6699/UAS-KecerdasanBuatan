@@ -55,7 +55,7 @@ Dalam literatur, *Retrieval-Augmented Generation* (RAG) terbukti meningkatkan ku
 
 Data yang digunakan adalah dokumen PRD referensi:
 
-- **`data/dataset/`** — 3 dokumen PDF yang dipindah dari Google Drive: *Sistem Manajemen Cafe*, *Sistem Koperasi*, dan *Sistem Inventaris Gudang* (dijadikan basis pengetahuan RAG dan referensi ROUGE).
+- **`data/dataset/`** — 7 dokumen PDF yang dipindah dari Google Drive: *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang*, *Sistem Absensi Mahasiswa*, *Sistem Manajemen Kelompok*, *Sistem Peminjaman Alat Camping*, dan *Product Requirement Document* (dijadikan basis pengetahuan RAG dan referensi ROUGE).
 - **ChromaDB (*vector store*)** — hasil *embedding* dokumen referensi (basis pengetahuan RAG).
 - **`data/Jurnal/`** — 5 PDF jurnal referensi untuk landasan teori.
 
@@ -77,8 +77,8 @@ Dokumen PRD memiliki struktur sebagai berikut:
 ### 3.3 Ukuran dan Format Data
 
 - **Format**: PDF (`.pdf`) dari Google Drive, dikonversi otomatis ke Markdown saat *ingestion*.
-- **Jumlah dokumen referensi**: 3 dokumen PDF.
-- **Total karakter**: ~113.000 karakter hasil konversi PDF (lihat visualisasi EDA, Gambar 1).
+- **Jumlah dokumen referensi**: 7 dokumen PDF.
+- **Total karakter**: ~250.000 karakter hasil konversi PDF (lihat visualisasi EDA, Gambar 1).
 - **Setelah *chunking***: ~30–50 segmen per dokumen (800 karakter per segmen).
 
 ### 3.4 Tipe Data
@@ -109,7 +109,7 @@ Karena proyek ini berupa *text generation* (bukan klasifikasi), EDA difokuskan p
 ### 5.1 Pembersihan Data
 
 - Filter pola eksklusi (mis. dokumen perkuliahan tidak relevan) pada tahap *build* *vector store*.
-- Konversi PDF/DOCX/PPTX ke teks Markdown (otomatis saat *ingestion*; untuk evaluasi digunakan 3 dokumen PDF dari Google Drive — *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang* — yang dikonversi ke Markdown.
+- Konversi PDF/DOCX/PPTX ke teks Markdown (otomatis saat *ingestion*; terdapat 7 dokumen PDF dari Google Drive — *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang*, *Sistem Absensi Mahasiswa*, *Sistem Manajemen Kelompok*, *Sistem Peminjaman Alat Camping*, *Product Requirement Document* — yang dikonversi ke Markdown.
 - Penghapusan dokumen duplikat/tidak relevan.
 
 ### 5.2 Chunking
@@ -132,7 +132,7 @@ Setiap *chunk* diubah menjadi vektor 384 dimensi menggunakan **`sentence-transfo
 
 Data dibagi berdasarkan peran dokumen:
 
-- **Basis pengetahuan / *reference* (train)**: 3 dokumen PDF `data/dataset/` di-*embed* ke ChromaDB dan dijadikan acuan ROUGE.
+- **Basis pengetahuan / *reference* (train)**: 7 dokumen PDF `data/dataset/` di-*embed* ke ChromaDB dan dijadikan acuan ROUGE.
 - **Test / prompt**: prompt generasi PRD baru per domain (mis. "Buat PRD untuk aplikasi e-commerce"), yang dibandingkan dengan dokumen referensi domain yang sama.
 
 ---
