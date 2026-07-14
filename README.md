@@ -11,8 +11,9 @@ Generasi Product Requirements Document (PRD) Otomatis Menggunakan Large Language
 UAS-KecerdasanBuatan/
 ├── Laporan_uas.md           # Laporan UAS (10 section)
 ├── README.md
-├── Signature_model.ipynb    # Model Utama (RAG)
-├── Comparison_model.ipynb   # Model Pembanding (Tanpa RAG)
+├── UAS_Model/
+│   ├── Signature_model.ipynb    # Model Utama (RAG)
+│   └── Comparison_model.ipynb   # Model Pembanding (Tanpa RAG)
 └── data/
     ├── dataset/             # PRD referensi (6 dokumen)
     ├── prd_templates/       # 5 template PRD
@@ -33,8 +34,8 @@ UAS-KecerdasanBuatan/
 
 ```bash
 # Jalankan notebook (Model Utama & Model Pembanding)
-jupyter notebook Signature_model.ipynb     # Model Utama (RAG)
-jupyter notebook Comparison_model.ipynb   # Model Pembanding (Tanpa RAG)
+jupyter notebook UAS_Model/Signature_model.ipynb     # Model Utama (RAG)
+jupyter notebook UAS_Model/Comparison_model.ipynb   # Model Pembanding (Tanpa RAG)
 ```
 
 > **Catatan:** Notebook mengimpor modul `App/` dan membutuhkan model `Model/` (keduanya **tidak diikutsertakan** dalam repositori ini karena batas ukuran GitHub). Hasil evaluasi ROUGE sudah dicatat lengkap di `Laporan_uas.md`.

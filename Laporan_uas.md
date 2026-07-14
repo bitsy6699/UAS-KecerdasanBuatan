@@ -13,8 +13,8 @@
 
 Proyek ini membangun sistem yang menyusun PRD — dokumen yang menjembatani kebutuhan bisnis, pengguna, dan implementasi teknis — secara otomatis dari sebuah prompt produk. Domain utamanya adalah NLP untuk *text generation*. Sesuai ketentuan Panduan UAS (pemilihan minimal 2 algoritma/pendekatan untuk dibandingkan), proyek ini membandingkan dua pendekatan:
 
-- **Model Utama** — Pendekatan **RAG** (*Retrieval-Augmented Generation*), diimplementasikan pada `Signature_model.ipynb`.
-- **Model Pembanding** — Pendekatan **Tanpa RAG** (*direct prompt* / *zero-shot*), diimplementasikan pada `Comparison_model.ipynb`.
+- **Model Utama** — Pendekatan **RAG** (*Retrieval-Augmented Generation*), diimplementasikan pada `UAS_Model/Signature_model.ipynb`.
+- **Model Pembanding** — Pendekatan **Tanpa RAG** (*direct prompt* / *zero-shot*), diimplementasikan pada `UAS_Model/Comparison_model.ipynb`.
 
 Kedua model menggunakan model bahasa yang sama (*Llama 3.2 1B Instruct*); satu-satunya variabel yang dibandingkan adalah **ada tidaknya tahap *retrieval*** dari basis pengetahuan.
 
@@ -146,8 +146,8 @@ Sesuai ketentuan (minimal 2 pendekatan untuk dibandingkan), dibandingkan dua pen
 
 | Pendekatan | Peran | Deskripsi | Komponen |
 |------------|-------|-----------|----------|
-| **RAG** | **Model Utama** (`Signature_model.ipynb`) | LLM generate PRD **dengan** konteks dari *retrieval* | Llama 3.2 1B + ChromaDB + Embedding + Template `master` |
-| **Tanpa RAG** | **Model Pembanding** (`Comparison_model.ipynb`) | LLM generate PRD **tanpa** konteks eksternal (direct prompt) | Llama 3.2 1B + Template `startup` (tanpa retrieval) |
+| **RAG** | **Model Utama** (`UAS_Model/Signature_model.ipynb`) | LLM generate PRD **dengan** konteks dari *retrieval* | Llama 3.2 1B + ChromaDB + Embedding + Template `master` |
+| **Tanpa RAG** | **Model Pembanding** (`UAS_Model/Comparison_model.ipynb`) | LLM generate PRD **tanpa** konteks eksternal (direct prompt) | Llama 3.2 1B + Template `startup` (tanpa retrieval) |
 
 ### 6.2 Alasan Pemilihan
 
@@ -165,7 +165,7 @@ Pendekatan **Tanpa RAG** dijadikan *baseline* untuk mengukur kontribusi tahap *r
 
 ### 6.3 Implementasi Model
 
-**Model Utama — RAG (`Signature_model.ipynb`):**
+**Model Utama — RAG (`UAS_Model/Signature_model.ipynb`):**
 
 ```python
 from chatbot import PRDChatbot
@@ -176,7 +176,7 @@ prd = cb.generate_prd(prompt, template_key="master")  # RAG: retrieve -> augment
 
 *Pipeline*: `Query -> Embedding -> ChromaDB (top-3) -> Augment Prompt + Template -> Llama 3.2 1B -> PRD`.
 
-**Model Pembanding — Tanpa RAG (`Comparison_model.ipynb`):**
+**Model Pembanding — Tanpa RAG (`UAS_Model/Comparison_model.ipynb`):**
 
 ```python
 messages = [
@@ -341,8 +341,8 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 
 ### B. Link Terkait
 
-- **Notebook Model Utama (RAG)**: `Signature_model.ipynb`
-- **Notebook Model Pembanding (Tanpa RAG)**: `Comparison_model.ipynb`
+- **Notebook Model Utama (RAG)**: `UAS_Model/Signature_model.ipynb`
+- **Notebook Model Pembanding (Tanpa RAG)**: `UAS_Model/Comparison_model.ipynb`
 - **Dataset referensi**: `data/dataset/` (6 dokumen PRD)
 - **Template PRD**: `data/prd_templates/` (5 template)
 - **Jurnal referensi**: `data/Jurnal/` (5 PDF)
