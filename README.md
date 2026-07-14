@@ -15,7 +15,7 @@ UAS-KecerdasanBuatan/
 │   ├── Signature_model.ipynb    # Model Utama (RAG)
 │   └── Comparison_model.ipynb   # Model Pembanding (Tanpa RAG)
 └── data/
-    ├── dataset/             # PRD referensi (6 dokumen)
+    ├── dataset/             # 3 dokumen PDF (Cafe/Koperasi/Gudang) dari Google Drive
     ├── prd_templates/       # 5 template PRD
     └── Jurnal/              # Referensi jurnal (5 PDF)
 ```

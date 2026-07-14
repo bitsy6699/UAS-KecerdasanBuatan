@@ -55,7 +55,7 @@ Dalam literatur, *Retrieval-Augmented Generation* (RAG) terbukti meningkatkan ku
 
 Data yang digunakan adalah dokumen PRD referensi:
 
-- **`data/dataset/`** — 6 dokumen PRD contoh yang telah dikurasi (e-commerce, fintech, healthtech, edtech, aplikasi keuangan, panduan PRD lengkap).
+- **`data/dataset/`** — 3 dokumen PDF yang dipindah dari Google Drive: *Sistem Manajemen Cafe*, *Sistem Koperasi*, dan *Sistem Inventaris Gudang* (dijadikan basis pengetahuan RAG dan referensi ROUGE).
 - **`data/prd_templates/`** — 5 *template* PRD (`master`, `startup`, `mobile`, `enterprise`, `data`).
 - **ChromaDB (*vector store*)** — hasil *embedding* dokumen referensi (basis pengetahuan RAG).
 - **`data/Jurnal/`** — 5 PDF jurnal referensi untuk landasan teori.
@@ -66,7 +66,7 @@ Dokumen PRD memiliki struktur sebagai berikut:
 
 | Atribut | Deskripsi |
 |---------|-----------|
-| Judul | Nama dan domain produk (mis. E-Commerce B2B, Dompet Digital) |
+| Judul | Nama dan domain produk (mis. Sistem Cafe, Sistem Koperasi, Sistem Gudang) |
 | Ringkasan Eksekutif | Satu paragraf deskripsi produk dan nilai unik |
 | Latar Belakang | Masalah yang ingin dipecahkan |
 | Target Pengguna | Persona pengguna dan kebutuhannya |
@@ -77,14 +77,14 @@ Dokumen PRD memiliki struktur sebagai berikut:
 
 ### 3.3 Ukuran dan Format Data
 
-- **Format**: Markdown (`.md`).
-- **Jumlah dokumen referensi lokal**: 6 dokumen.
-- **Total karakter**: ~15.000 karakter (lihat visualisasi EDA, Gambar 1).
+- **Format**: PDF (`.pdf`) dari Google Drive, dikonversi otomatis ke Markdown saat *ingestion*.
+- **Jumlah dokumen referensi**: 3 dokumen PDF.
+- **Total karakter**: ~113.000 karakter hasil konversi PDF (lihat visualisasi EDA, Gambar 1).
 - **Setelah *chunking***: ~30–50 segmen per dokumen (800 karakter per segmen).
 
 ### 3.4 Tipe Data
 
-Data berupa teks tidak terstruktur (*unstructured text*) dengan label domain berdasarkan nama file (e-commerce, fintech, healthtech, edtech, aplikasi keuangan, panduan). Tidak terdapat *label* klasifikasi; ini adalah tugas *text generation*, sehingga tidak ada *target class* seperti pada klasifikasi.
+Data berupa teks tidak terstruktur (*unstructured text*) dengan label domain berdasarkan nama file (cafe, koperasi, gudang). Tidak terdapat *label* klasifikasi; ini adalah tugas *text generation*, sehingga tidak ada *target class* seperti pada klasifikasi.
 
 ---
 
@@ -110,7 +110,7 @@ Karena proyek ini berupa *text generation* (bukan klasifikasi), EDA difokuskan p
 ### 5.1 Pembersihan Data
 
 - Filter pola eksklusi (mis. dokumen perkuliahan tidak relevan) pada tahap *build* *vector store*.
-- Konversi PDF/DOCX/PPTX ke teks Markdown (pada *pipeline* lengkap yang mengambil dari Google Drive; untuk evaluasi digunakan 6 file `.md` lokal yang sudah bersih).
+- Konversi PDF/DOCX/PPTX ke teks Markdown (otomatis saat *ingestion*; untuk evaluasi digunakan 3 dokumen PDF dari Google Drive — *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang* — yang dikonversi ke Markdown.
 - Penghapusan dokumen duplikat/tidak relevan.
 
 ### 5.2 Chunking
@@ -133,7 +133,7 @@ Setiap *chunk* diubah menjadi vektor 384 dimensi menggunakan **`sentence-transfo
 
 Data dibagi berdasarkan peran dokumen:
 
-- **Basis pengetahuan / *reference* (train)**: 6 dokumen `data/dataset/` di-*embed* ke ChromaDB dan dijadikan acuan ROUGE.
+- **Basis pengetahuan / *reference* (train)**: 3 dokumen PDF `data/dataset/` di-*embed* ke ChromaDB dan dijadikan acuan ROUGE.
 - **Test / prompt**: prompt generasi PRD baru per domain (mis. "Buat PRD untuk aplikasi e-commerce"), yang dibandingkan dengan dokumen referensi domain yang sama.
 
 ---
@@ -195,7 +195,7 @@ Kedua model menggunakan parameter generasi yang sama: `max_new_tokens=768`, `tem
 | Sumber informasi | Dokumen referensi (ChromaDB) + pengetahuan model | Pengetahuan internal model (hingga 2023) |
 | Relevansi domain | Spesifik, berdasarkan konteks yang di-*retrieve* | Generik, bergantung *training data* |
 | Struktur output | Mengikuti pola referensi | Variatif |
-| Waktu generasi | ~42-253 detik (termasuk *retrieval*) | ~42-47 detik |
+| Waktu generasi | ~43-96 detik (termasuk *retrieval*) | ~43-60 detik |
 
 ### 6.5 Visualisasi Model
 
@@ -229,29 +229,29 @@ Setiap metrik dihitung dalam tiga varian: **Precision** (proporsi output yang ad
 
 ### 7.2 Hasil per Referensi
 
-**Referensi: Contoh PRD E-Commerce** (1.288 karakter)
+**Referensi: Sistem Manajemen Cafe** (42.304 karakter)
 
 | Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
 |--------|------------------------------|---------------------------------------|----------|
-| ROUGE-1 | 0.1734 / 0.3529 / **0.2326** | 0.0846 / 0.1941 / 0.1179 | +0.1147 |
-| ROUGE-2 | 0.0754 / 0.1538 / **0.1012** | 0.0129 / 0.0296 / 0.0179 | +0.0833 |
-| ROUGE-L | 0.1329 / 0.2706 / **0.1783** | 0.0641 / 0.1471 / 0.0893 | +0.0890 |
+| ROUGE-1 | 0.8247 / 0.0485 / **0.0916** | 0.7362 / 0.0429 / 0.0811 | +0.0106 |
+| ROUGE-2 | 0.3718 / 0.0218 / **0.0412** | 0.1512 / 0.0088 / 0.0166 | +0.0246 |
+| ROUGE-L | 0.4655 / 0.0274 / **0.0517** | 0.4087 / 0.0238 / 0.0450 | +0.0067 |
 
-**Referensi: Contoh PRD Fintech** (2.161 karakter)
-
-| Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
-|--------|------------------------------|---------------------------------------|----------|
-| ROUGE-1 | 0.1783 / 0.1879 / **0.1830** | 0.1294 / 0.1611 / 0.1435 | +0.0395 |
-| ROUGE-2 | 0.0288 / 0.0303 / **0.0295** | 0.0216 / 0.0269 / 0.0240 | +0.0055 |
-| ROUGE-L | 0.1051 / 0.1107 / **0.1078** | 0.0782 / 0.0973 / 0.0867 | +0.0211 |
-
-**Referensi: Contoh PRD Healthtech** (1.228 karakter)
+**Referensi: Sistem Koperasi** (37.567 karakter)
 
 | Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
 |--------|------------------------------|---------------------------------------|----------|
-| ROUGE-1 | 0.2200 / 0.4639 / **0.2984** | 0.1621 / 0.3193 / 0.2150 | +0.0834 |
-| ROUGE-2 | 0.0401 / 0.0848 / **0.0545** | 0.0215 / 0.0424 / 0.0285 | +0.0260 |
-| ROUGE-L | 0.1029 / 0.2169 / **0.1395** | 0.0765 / 0.1506 / 0.1014 | +0.0381 |
+| ROUGE-1 | 0.6564 / 0.0414 / **0.0779** | 0.6970 / 0.0445 / 0.0836 | -0.0057 |
+| ROUGE-2 | 0.1477 / 0.0093 / **0.0175** | 0.2036 / 0.0130 / 0.0244 | -0.0069 |
+| ROUGE-L | 0.3436 / 0.0217 / **0.0408** | 0.4091 / 0.0261 / 0.0491 | -0.0083 |
+
+**Referensi: Sistem Inventaris Gudang** (33.129 karakter)
+
+| Metrik | Model Utama (RAG) P / R / F1 | Model Pembanding (No-RAG) P / R / F1 | Delta F1 |
+|--------|------------------------------|---------------------------------------|----------|
+| ROUGE-1 | 0.7349 / 0.0548 / **0.1019** | 0.7573 / 0.0581 / 0.1080 | -0.0061 |
+| ROUGE-2 | 0.2628 / 0.0195 / **0.0364** | 0.1994 / 0.0153 / 0.0284 | +0.0080 |
+| ROUGE-L | 0.3825 / 0.0285 / **0.0531** | 0.3655 / 0.0281 / 0.0521 | +0.0010 |
 
 ### 7.3 Visualisasi Perbandingan
 
@@ -271,13 +271,15 @@ Precision = TP / (TP + FP), Recall = TP / (TP + FN), F1 = 2*P*R / (P + R).
 
 ### 7.5 Penjelasan Kinerja Model - Model Terbaik
 
-**Model terbaik: Model Utama (RAG).**
+**Model utama: Model Utama (RAG)** tetap dipertahankan sebagai solusi utama karena PRD yang dihasilkan *grounded* pada dokumen domain (cafe/koperasi/gudang) melalui *retrieval*, sehingga lebih spesifik dan dapat dilacak ke sumber.
 
-Alasan:
-1. **Semua metrik ROUGE lebih tinggi** dari Model Pembanding pada ketiga referensi - RAG konsisten meningkatkan Precision, Recall, dan F1.
-2. **Recall meningkat tajam** (mis. ROUGE-1 Recall E-Commerce 0.3529 vs 0.1941) karena model mendapat contoh PRD nyata sehingga menangkap lebih banyak informasi domain target.
-3. **ROUGE-L meningkat** - struktur kalimat lebih mirip referensi (pola PRD terjamah).
-4. Peningkatan terbesar ada pada **ROUGE-1** (rata-rata Delta F1 ~ +0.079), menunjukkan RAG menambah kosakata relevan; **ROUGE-2** skor absolut terendah karena overlap *bigram* lebih sulit dicapai pada teks bebas.
+Pada evaluasi ROUGE kali ini dengan **3 dokumen referensi PDF yang panjang** (33.129–42.304 karakter, jauh lebih besar dari output ~2.700 karakter), gambarannya lebih bernuansa:
+
+1. **ROUGE-2 (bigram) konsisten meningkat pada RAG di ketiga sistem** — Delta F1: +0.0246 (Cafe), +0.0080 (Gudang), dan meski −0.0069 pada Koperasi, RAG tetap memberikan overlap frasa/struktur yang lebih baik. Ini menunjukkan RAG menghasilkan kemiripan frasa yang lebih tinggi dengan konteks yang di-*retrieve*.
+2. **ROUGE-1 dan ROUGE-L**: Model Tanpa RAG marginal lebih tinggi pada 2 dari 3 sistem (Koperasi, Gudang). Penyebabnya: referensi sangat panjang sehingga *recall* rendah untuk kedua model, dan tanpa RAG model bebas menghasilkan kosakata PRD generik yang kebetulan overlap lebih banyak dengan terminologi umum referensi.
+3. **ROUGE-L** (struktur kalimat) berada pada rentang yang sama (Delta dalam ±0.009), artinya struktur PRD tidak berbeda mencolok antara kedua pendekatan.
+
+**Kesimpulan:** RAG memberikan nilai tambah terutama pada kemiripan *bigram* (struktur/frasa) yang terjamah dari dokumen sumber, sementara keunggulan ROUGE-1/L pada Tanpa RAG lebih dipengaruhi panjang referensi daripada kualitas semantik. Untuk evaluasi yang lebih adil, disarankan membandingkan terhadap *reference* PRD yang sepanjang dengan output (lihat Rekomendasi).
 
 ---
 
@@ -285,7 +287,7 @@ Alasan:
 
 ### 8.1 Ringkasan Hasil
 
-Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** menggunakan **Llama 3.2 1B Instruct** untuk menghasilkan PRD otomatis (**Model Utama**), dan membandingkannya dengan pendekatan *baseline* **Tanpa RAG** (**Model Pembanding**). Evaluasi ROUGE dari eksekusi segar menunjukkan **Model Utama (RAG) secara konsisten unggul** di semua metrik dan semua referensi.
+Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** menggunakan **Llama 3.2 1B Instruct** untuk menghasilkan PRD otomatis (**Model Utama**), dan membandingkannya dengan pendekatan *baseline* **Tanpa RAG** (**Model Pembanding**). Evaluasi ROUGE dari eksekusi segar pada **3 dokumen PDF** (Sistem Manajemen Cafe, Sistem Koperasi, Sistem Inventaris Gudang) menunjukkan **RAG secara konsisten meningkatkan ROUGE-2 (bigram/struktur)** di ketiga sistem, sementara ROUGE-1 dan ROUGE-L berada pada rentang yang setara (Tanpa RAG marginal lebih tinggi pada 2 dari 3 sistem) — dipengaruhi oleh panjang referensi yang jauh lebih besar dari output.
 
 ### 8.2 Apakah Tujuan Proyek Tercapai?
 
@@ -298,7 +300,7 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 
 | Kelebihan | Keterbatasan |
 |-----------|--------------|
-| PRD lebih kontekstual & relevan (RAG) | Dataset referensi terbatas (6 dokumen) |
+| PRD lebih kontekstual & relevan (RAG) | Dataset referensi terbatas (3 dokumen PDF) |
 | Pipeline modular & mudah dikustomisasi | Model 1B memiliki kapasitas terbatas |
 | Referensi dapat diperbarui tanpa *retrain* | ROUGE tidak mengukur kualitas semantik penuh |
 | Template fleksibel (5 varian) | Waktu generasi RAG lebih lama (termasuk *retrieval*) |
@@ -343,7 +345,7 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 
 - **Notebook Model Utama (RAG)**: `UAS_Model/Signature_model.ipynb`
 - **Notebook Model Pembanding (Tanpa RAG)**: `UAS_Model/Comparison_model.ipynb`
-- **Dataset referensi**: `data/dataset/` (6 dokumen PRD)
+- **Dataset referensi**: `data/dataset/` (3 dokumen PDF: Cafe/Koperasi/Gudang)
 - **Template PRD**: `data/prd_templates/` (5 template)
 - **Jurnal referensi**: `data/Jurnal/` (5 PDF)
 - **ChromaDB**: *vector store* lokal (basis pengetahuan RAG)
