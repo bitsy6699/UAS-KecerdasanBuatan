@@ -1,39 +1,30 @@
 <p align="center">
   <!-- Animated terminal SVG -->
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" width="760">
-    <defs>
-      <style>
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-        @keyframes scan  { 0%{transform:translateY(2px)} 100%{transform:translateY(196px)} }
-        @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
-        @keyframes type  { 0%{clip-path:inset(0 100% 0 0)} 100%{clip-path:inset(0 0 0 0)} }
-        @keyframes glow  { 0%,100%{filter:drop-shadow(0 0 2px #d00)} 50%{filter:drop-shadow(0 0 8px #dc2626)} }
-        .glow { animation:glow 2s ease-in-out infinite }
-        .cursor { animation:blink .8s step-end infinite }
-        .scanline { animation:scan 4s linear infinite }
-        .type-text { animation:type 3s steps(40) forwards; white-space:nowrap; overflow:hidden }
-      </style>
-    </defs>
     <!-- Background terminal -->
-    <rect x="0" y="0" width="760" height="220" rx="0" fill="#111" stroke="#dc2626" stroke-width="2"/>
+    <rect x="0" y="0" width="760" height="220" rx="0" fill="#111" stroke="#dc2626" stroke-width="3"/>
     <!-- Title bar -->
-    <rect x="2" y="2" width="756" height="32" fill="#1a1a1a"/>
-    <line x1="2" y1="34" x2="758" y2="34" stroke="#333" stroke-width="1"/>
+    <rect x="3" y="3" width="754" height="30" fill="#1a1a1a"/>
+    <line x1="3" y1="33" x2="757" y2="33" stroke="#333" stroke-width="1"/>
     <circle cx="22" cy="18" r="5" fill="#dc2626"/>
     <circle cx="40" cy="18" r="5" fill="#555"/>
     <circle cx="58" cy="18" r="5" fill="#555"/>
     <text x="380" y="23" font-family="monospace" font-size="11" fill="#666" text-anchor="middle" letter-spacing="2">loehoer.ai — prd generator</text>
     <!-- Main title -->
-    <text x="30" y="75" font-family="monospace" font-size="30" font-weight="800" fill="#dc2626" class="glow">&gt;&gt;&gt; loehoer.ai &mdash; prd generator &lt;&lt;&lt;</text>
-    <text x="30" y="105" font-family="monospace" font-size="13" fill="#888">─────────────────────────────────────────────────</text>
+    <text x="30" y="75" font-family="monospace" font-size="30" font-weight="bold" fill="#dc2626">&gt;&gt;&gt; loehoer.ai &mdash; prd generator &lt;&lt;&lt;</text>
+    <text x="30" y="105" font-family="monospace" font-size="13" fill="#666">──────────────────────────────────────────────────</text>
     <!-- Info lines -->
     <text x="30" y="135" font-family="monospace" font-size="14" fill="#e0e0e0">$ model: <tspan fill="#dc2626">groq cloud (llama-3.1-8b-instant)</tspan></text>
     <text x="30" y="160" font-family="monospace" font-size="14" fill="#e0e0e0">$ rag  : <tspan fill="#dc2626">chromadb + miniml-l6-v2 — 7 pdf</tspan></text>
     <text x="30" y="185" font-family="monospace" font-size="14" fill="#e0e0e0">$ eval : <tspan fill="#dc2626">rouge-1/2/l</tspan></text>
-    <!-- Blinking cursor -->
-    <rect x="234" y="173" width="9" height="16" fill="#dc2626" class="cursor" rx="0"/>
-    <!-- Scanline overlay -->
-    <rect x="2" y="2" width="756" height="2" fill="rgba(220,38,38,0.15)" class="scanline"/>
+    <!-- Blinking cursor (SMIL animation) -->
+    <rect x="234" y="173" width="9" height="16" fill="#dc2626" rx="0">
+      <animate attributeName="opacity" values="1;0;1" dur="0.8s" repeatCount="indefinite"/>
+    </rect>
+    <!-- Scanline overlay (SMIL animation) -->
+    <rect x="3" y="3" width="754" height="3" fill="rgba(220,38,38,0.12)">
+      <animateTransform attributeName="transform" type="translate" values="0 0; 0 214; 0 0" dur="4s" repeatCount="indefinite"/>
+    </rect>
   </svg>
 </p>
 
@@ -67,10 +58,10 @@ pendekatan
 >>> struktur
 ```
 
-```
+<pre>
 uas-kecerdasanbuatan/
 ├── laporan_uas.md                # laporan uas (10 section)
-├── <span style="color:#dc2626">app</span>/
+├── <font color="#dc2626">app</font>/
 │   ├── chatbot.py                # llm pipeline (groq cloud)
 │   ├── config.py                 # konfigurasi path & model
 │   ├── rag_builder.py            # build chromadb vectorstore
@@ -79,16 +70,15 @@ uas-kecerdasanbuatan/
 │   ├── backend/                  # fastapi
 │   └── frontend/                 # react — loehoer.ai
 ├── uas_model/
-│   ├── signature_model.ipynb     # <span style="color:#dc2626">dengan rag</span>
-│   └── comparison_model.ipynb    # <span style="color:#dc2626">tanpa rag</span>
+│   ├── signature_model.ipynb     # <font color="#dc2626">dengan rag</font>
+│   └── comparison_model.ipynb    # <font color="#dc2626">tanpa rag</font>
 ├── data/
 │   ├── dataset/                  # 7 pdf referensi
 │   └── jurnal/                   # 5 referensi jurnal
 ├── output/                       # prd hasil generate (tracked)
 ├── report/                       # gambar evaluasi + rouge_results.json
 └── requirements-cloud.txt
-```
-
+</pre>
 ---
 
 ```
