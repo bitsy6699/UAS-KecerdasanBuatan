@@ -26,8 +26,8 @@ Pipeline <b style="color:#dc2626">rag-based prd generator</b> — groq cloud (ll
 
 <pre>
 uas-kecerdasanbuatan/
-├── laporan_uas.md                # laporan uas (10 section)
-├── <font color="#dc2626">app</font>/
+├── Laporan_uas.md                # laporan uas (10 section)
+├── <font color="#dc2626">App</font>/
 │   ├── chatbot.py                # llm pipeline (groq cloud)
 │   ├── config.py                 # konfigurasi path & model
 │   ├── rag_builder.py            # build chromadb vectorstore
@@ -35,12 +35,12 @@ uas-kecerdasanbuatan/
 │   ├── patch_notebooks.py        # patch notebook + inject output
 │   ├── backend/                  # fastapi
 │   └── frontend/                 # react — loehoer.ai
-├── uas_model/
+├── UAS_Model/
 │   ├── signature_model.ipynb     # <font color="#dc2626">dengan rag</font>
 │   └── comparison_model.ipynb    # <font color="#dc2626">tanpa rag</font>
 ├── data/
 │   ├── dataset/                  # 7 pdf referensi
-│   └── jurnal/                   # 5 referensi jurnal
+│   └── Jurnal/                   # 5 referensi jurnal
 ├── output/                       # prd hasil generate + gambar evaluasi + json
 └── requirements-cloud.txt
 </pre>
@@ -81,19 +81,25 @@ EOF
 $ # isi llm_api_key (https://console.groq.com/keys)
 
 # 3. build vectorstore
-$ python3 -m app.rag_builder
+$ python3 App/rag_builder.py
 
 # 4. run notebook - model utama (rag)
-$ jupyter notebook uas_model/signature_model.ipynb
+$ jupyter notebook UAS_Model/Signature_model.ipynb
 
 # 5. run notebook - model pembanding (tanpa rag)
-$ jupyter notebook uas_model/comparison_model.ipynb
+$ jupyter notebook UAS_Model/Comparison_model.ipynb
 
 # 6. evaluasi rouge
-$ python3 app/evaluate_dataset.py
+$ python3 App/evaluate_dataset.py
 
 # 7. patch notebook
-$ python3 app/patch_notebooks.py
+$ python3 App/patch_notebooks.py
+
+# 8. backend (fastapi)
+$ cd App/backend && python3 main.py
+
+# 9. frontend (react)
+$ cd App/frontend && npm install && npm run dev
 ```
 
 ---
