@@ -85,7 +85,7 @@ export default function App() {
 
   const [messages, setMessages] = useState<Message[]>([])
   const [generating, setGenerating] = useState(false)
-  const [templateKey, setTemplateKey] = useState('master')
+  const [templateKey, setTemplateKey] = useState('startup')
   const [input, setInput] = useState('')
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [partial, setPartial] = useState('')
@@ -170,7 +170,6 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: input,
-          template_key: templateKey,
         }),
       })
       const data = await res.json()
@@ -264,7 +263,7 @@ export default function App() {
           </p>
 
           <hr />
-          <p className="version">v2.1 &nbsp; Llama 3.2 1B</p>
+          <p className="version">v2.2 &nbsp; Groq cloud 8B</p>
         </div>
       </aside>
       <div className="app-bg">
@@ -304,7 +303,7 @@ export default function App() {
 
         {messages.length === 0 && !generating && (
           <div className="welcome-msg">
-            <strong>loehoer.ai</strong> — PRD Generator&emsp;`v2.0`
+            <strong>loehoer.ai</strong> — PRD Generator&emsp;`v2.2`
             <br /><br />
             Ketik kebutuhan fitur atau produk kamu, AI akan menyusun PRD terstruktur per bagian.
             <br /><br />
