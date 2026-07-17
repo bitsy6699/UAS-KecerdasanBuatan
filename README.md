@@ -53,6 +53,18 @@ uas-kecerdasanbuatan/
 ---
 
 ```
+>>> eda
+```
+
+<p align="center">
+  <img src="report/eda_dataset.png" alt="eda" width="700"/>
+</p>
+
+7 dokumen PDF referensi — chunking 800 karakter, embedding MiniLM-L6-v2, disimpan di ChromaDB.
+
+---
+
+```
 >>> pipeline
 ```
 
