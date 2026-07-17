@@ -12,9 +12,7 @@
 
 ---
 
-```
->>> ringkasan
-```
+## ringkasan
 
 Pipeline <b style="color:#dc2626">rag-based prd generator</b> — groq cloud (llama-3.1-8b-instant) + chromadb + rouge-1/2/l.
 
@@ -24,9 +22,7 @@ Pipeline <b style="color:#dc2626">rag-based prd generator</b> — groq cloud (ll
 
 ---
 
-```
->>> struktur
-```
+## struktur
 
 <pre>
 uas-kecerdasanbuatan/
@@ -52,9 +48,7 @@ uas-kecerdasanbuatan/
 
 ---
 
-```
->>> eda
-```
+## eda
 
 <p align="center">
   <img src="report/eda_dataset.png" alt="eda" width="700"/>
@@ -64,21 +58,17 @@ uas-kecerdasanbuatan/
 
 ---
 
-```
->>> pipeline
-```
+## pipeline
 
-```
+<pre>
             800 chars               chromadb                rouge-1
 pdf ─────────── chunking ─────────── embedding ─────────── generate ─────────── score
             7 docs                miniml                groq llm     rouge-l
-```
+</pre>
 
 ---
 
-```
->>> quick start
-```
+## quick start
 
 ```bash
 # 1. install
@@ -106,9 +96,7 @@ $ python3 app/patch_notebooks.py
 
 ---
 
-```
->>> konfigurasi llm
-```
+## konfigurasi llm
 
 | variable      | default                                         | deskripsi         |
 |---------------|-------------------------------------------------|-------------------|
@@ -124,9 +112,7 @@ llm_api_key=gsk_...
 
 ---
 
-```
->>> hasil evaluasi
-```
+## hasil evaluasi
 
 <p align="center">
   <img src="report/rouge_comparison.png" alt="rouge" width="700"/>
@@ -134,15 +120,11 @@ llm_api_key=gsk_...
 
 ---
 
-```
->>> referensi
-```
+## referensi
 
-```
- 1 │ lewis et al. (2020) — retrieval-augmented generation for knowledge-intensive nlp tasks
- 2 │ lin (2004)         — rouge: a package for automatic evaluation of summaries
- 3 │ grattafiori et al. (2024) — the llama 3 herd of models
- 4 │ kumar et al. (2024) — rouge-ss: a new rouge variant
- 5 │ liu et al. (2024)  — how reliable are automatic evaluation methods
- 6 │ tanwir et al. (2026) — rag llm-based chatbot for stunting prevention
-```
+1. lewis et al. (2020) — retrieval-augmented generation for knowledge-intensive nlp tasks
+2. lin (2004) — rouge: a package for automatic evaluation of summaries
+3. grattafiori et al. (2024) — the llama 3 herd of models
+4. kumar et al. (2024) — rouge-ss: a new rouge variant
+5. liu et al. (2024) — how reliable are automatic evaluation methods
+6. tanwir et al. (2026) — rag llm-based chatbot for stunting prevention
