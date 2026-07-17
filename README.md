@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="report/header.svg" alt="terminal header" width="760"/>
+  <img src="output/header.svg" alt="terminal header" width="760"/>
 </p>
 
 <p align="center">
@@ -41,8 +41,7 @@ uas-kecerdasanbuatan/
 ├── data/
 │   ├── dataset/                  # 7 pdf referensi
 │   └── jurnal/                   # 5 referensi jurnal
-├── output/                       # prd hasil generate (tracked)
-├── report/                       # gambar evaluasi + rouge_results.json
+├── output/                       # prd hasil generate + gambar evaluasi + json
 └── requirements-cloud.txt
 </pre>
 
@@ -51,7 +50,7 @@ uas-kecerdasanbuatan/
 ## eda
 
 <p align="center">
-  <img src="report/eda_dataset.png" alt="eda" width="700"/>
+  <img src="output/eda_dataset.png" alt="eda" width="700"/>
 </p>
 
 7 dokumen PDF referensi — chunking 800 karakter, embedding MiniLM-L6-v2, disimpan di ChromaDB.
@@ -74,8 +73,11 @@ pdf ─────────── chunking ───────────
 # 1. install
 $ pip install -r requirements-cloud.txt
 
-# 2. api key
-$ cp .env.example .env
+# 2. api key (buat file .env)
+$ cat > .env << EOF
+llm_backend=cloud
+llm_api_key=gsk_your_key_here
+EOF
 $ # isi llm_api_key (https://console.groq.com/keys)
 
 # 3. build vectorstore
@@ -115,7 +117,7 @@ llm_api_key=gsk_...
 ## hasil evaluasi
 
 <p align="center">
-  <img src="report/rouge_comparison.png" alt="rouge" width="700"/>
+  <img src="output/rouge_comparison.png" alt="rouge" width="700"/>
 </p>
 
 ---

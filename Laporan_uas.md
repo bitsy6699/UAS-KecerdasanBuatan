@@ -55,7 +55,7 @@ Dalam literatur, *Retrieval-Augmented Generation* (RAG) terbukti meningkatkan ku
 
 Data yang digunakan adalah dokumen PRD referensi:
 
-- **`report/`** — 7 dokumen PDF yang dipindah dari Google Drive: *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang*, *Sistem Absensi Mahasiswa*, *Sistem Manajemen Kelompok*, *Sistem Peminjaman Alat Camping*, dan *Product Requirement Document* (dijadikan basis pengetahuan RAG dan referensi ROUGE).
+- **`data/dataset/`** — 7 dokumen PDF yang dipindah dari Google Drive: *Sistem Manajemen Cafe*, *Sistem Koperasi*, *Sistem Inventaris Gudang*, *Sistem Absensi Mahasiswa*, *Sistem Manajemen Kelompok*, *Sistem Peminjaman Alat Camping*, dan *Product Requirement Document* (dijadikan basis pengetahuan RAG dan referensi ROUGE).
 - **ChromaDB (*vector store*)** — hasil *embedding* dokumen referensi (basis pengetahuan RAG).
 - **`data/Jurnal/`** — 5 PDF jurnal referensi untuk landasan teori.
 
@@ -93,7 +93,7 @@ Karena proyek ini berupa *text generation* (bukan klasifikasi), EDA difokuskan p
 
 **Visualisasi 1 — Ukuran dan jumlah *chunk* per dokumen referensi.**
 
-![EDA Dataset](report/eda_dataset.png)
+![EDA Dataset](output/eda_dataset.png)
 
 *Gambar 1. Distribusi jumlah karakter dan jumlah chunk (chunk size 800, overlap 100) per dokumen PRD referensi. Dokumen berukuran 1.200–2.200 karakter, menghasilkan 2–4 chunk per dokumen.*
 
@@ -132,7 +132,7 @@ Setiap *chunk* diubah menjadi vektor 384 dimensi menggunakan **`sentence-transfo
 
 Data dibagi berdasarkan peran dokumen:
 
-- **Basis pengetahuan / *reference* (train)**: 7 dokumen PDF `report/` di-*embed* ke ChromaDB dan dijadikan acuan ROUGE.
+- **Basis pengetahuan / *reference* (train)**: 7 dokumen PDF `data/dataset/` di-*embed* ke ChromaDB dan dijadikan acuan ROUGE.
 - **Test / prompt**: prompt generasi PRD baru per domain (mis. "Buat PRD untuk aplikasi e-commerce"), yang dibandingkan dengan dokumen referensi domain yang sama.
 
 ---
@@ -286,7 +286,7 @@ Setiap metrik dihitung dalam tiga varian: **Precision** (proporsi output yang ad
 
 ### 7.3 Visualisasi Perbandingan
 
-![ROUGE Comparison](report/rouge_comparison.png)
+![ROUGE Comparison](output/rouge_comparison.png)
 
 *Gambar 2. Perbandingan ROUGE F1-score: Model Utama (RAG, hijau) vs Model Pembanding (Tanpa RAG, merah) pada ketujuh referensi.*
 
@@ -359,7 +359,7 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 
 ## 10. Lampiran
 
-### A. Template PRD (Master)
+### A. Template PRD (Startup / MVP)
 
 ```
 # PRD: [Nama Produk]
@@ -376,9 +376,38 @@ Proyek berhasil mengimplementasikan pipeline **Retrieval-Augmented Generation** 
 
 - **Notebook Model Utama (RAG)**: `UAS_Model/Signature_model.ipynb`
 - **Notebook Model Pembanding (Tanpa RAG)**: `UAS_Model/Comparison_model.ipynb`
-- **Dataset referensi**: `report/` (7 dokumen PDF)
+- **Dataset referensi**: `data/dataset/` (7 dokumen PDF)
 - **Jurnal referensi**: `data/Jurnal/` (5 PDF)
 - **ChromaDB**: *vector store* (basis pengetahuan RAG)
-- **Visualisasi ROUGE**: `report/rouge_comparison.png` (dihasilkan `App/evaluate_dataset.py`)
-- **Visualisasi EDA**: `report/eda_dataset.png` (dihasilkan `App/evaluate_dataset.py`)
+- **Visualisasi ROUGE**: `output/rouge_comparison.png` (dihasilkan `App/evaluate_dataset.py`)
+- **Visualisasi EDA**: `output/eda_dataset.png` (dihasilkan `App/evaluate_dataset.py`)
 - **Contoh Output**: `output/prd_rag_buat_prd_lengkap_untuk_sistem_absensi_ma.md`
+- **Backend API**: `App/backend/` (FastAPI)
+- **Frontend Web**: `App/frontend/` (React — loehoer.ai)
+- **Terminal Header**: `output/header.svg` (animated SVG untuk README)
+- **Hasil Evaluasi JSON**: `output/rouge_results.json`
+- **Dependensi**: `requirements-cloud.txt`
+
+### C. Struktur App/ (Source Code Pipeline + Web Application)
+
+Folder `App/` berisi seluruh source code pipeline RAG + web application:
+
+```
+App/
+├── chatbot.py          # LLM pipeline (Groq cloud)
+├── config.py           # Konfigurasi path & model
+├── rag_builder.py      # Bangun ChromaDB vectorstore
+├── evaluate_dataset.py # Evaluasi ROUGE (7 PDF)
+├── patch_notebooks.py  # Patch notebook: fix markdown + inject output
+├── backend/            # FastAPI backend (API endpoint)
+└── frontend/           # React frontend — loehoer.ai
+```
+
+Penjelasan:
+- **`chatbot.py`**, **`rag_builder.py`**, **`config.py`**: Core pipeline RAG — inisialisasi LLM (Groq cloud), retrieval dari ChromaDB, generasi PRD, dan konfigurasi path/model.
+- **`evaluate_dataset.py`**: Script evaluasi otomatis ROUGE-1/2/L pada 7 dokumen PDF, menghasilkan gambar visualisasi + JSON.
+- **`patch_notebooks.py`**: Utility untuk patch notebook — update markdown, hapus referensi stale, inject hasil evaluasi ROUGE.
+- **`backend/`**: API server (FastAPI) yang menyediakan REST endpoint untuk generate PRD, frontend integration, dan SSE streaming.
+- **`frontend/`**: Antarmuka web (React 19 + Vite) bernama **loehoer.ai** — brutalist terminal-style UI dengan dark theme, red accent (#dc2626), JetBrains Mono, animated braille dots background, dan blinking cursor.
+
+Struktur modular ini memisahkan core pipeline (`App/`) dari notebook eksperimen (`UAS_Model/`), dataset referensi (`data/`), dan output generasi (`output/`), sehingga memudahkan pengembangan dan testing independen.

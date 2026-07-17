@@ -16,7 +16,7 @@ import pdfplumber
 from rag_builder import rebuild_vectorstore
 from chatbot import PRDChatbot
 
-# 1) Rebuild vectorstore murni dari 7 PDF di report/
+# 1) Rebuild vectorstore murni dari 7 PDF di data/dataset/
 if config.VECTORSTORE_DIR.exists():
     shutil.rmtree(config.VECTORSTORE_DIR)
 vs = rebuild_vectorstore()
@@ -110,7 +110,7 @@ fig.suptitle('Perbandingan ROUGE F1-Score: Tanpa RAG vs Dengan RAG', fontsize=14
 plt.tight_layout()
 plt.savefig(str(BASE_DIR / 'data' / 'dataset' / 'rouge_comparison.png'), dpi=150)
 plt.close()
-print('\nGrafik saved to report/rouge_comparison.png')
+print('\nGrafik saved to output/rouge_comparison.png')
 
 # 4) EDA chart: ukuran referensi & chunk per sistem
 ref_lens = [RESULTS[n]['ref_len'] for n in names]
@@ -130,9 +130,9 @@ ax1.set_title('EDA Dataset: 7 Dokumen PDF')
 fig.tight_layout()
 plt.savefig(str(BASE_DIR / 'data' / 'dataset' / 'eda_dataset.png'), dpi=150)
 plt.close()
-print('Grafik saved to report/eda_dataset.png')
+print('Grafik saved to output/eda_dataset.png')
 
 # 5) Simpan hasil JSON
 out = {n: {k: v for k, v in r.items()} for n, r in RESULTS.items()}
 (BASE_DIR / 'data' / 'dataset' / 'rouge_results.json').write_text(json.dumps(out, indent=2, ensure_ascii=False))
-print('Hasil tersimpan di report/rouge_results.json')
+print('Hasil tersimpan di output/rouge_results.json')

@@ -3,7 +3,7 @@ import json, base64
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
-RES = json.loads((BASE / 'report' / 'rouge_results.json').read_text())
+RES = json.loads((BASE / 'output' / 'rouge_results.json').read_text())
 COMP = BASE / 'UAS_Model' / 'Comparison_model.ipynb'
 SIG = BASE / 'UAS_Model' / 'Signature_model.ipynb'
 
@@ -27,13 +27,13 @@ def inject_stream(cell, text, ec=1):
 FIXES = [
     ("Llama 3.2 1B Instruct", "Groq cloud (llama-3.1-8b-instant)"),
     ("Llama 3.2 1B",           "Groq cloud (llama-3.1-8b-instant)"),
-    ("3 PDF dari Google Drive", "7 PDF dari report/"),
+    ("3 PDF dari Google Drive", "7 PDF dari data/dataset/"),
     ("3 PDF",                   "7 PDF"),
     ("3 dokumen PDF",           "7 dokumen PDF"),
     ("3 dokumen referensi",     "7 dokumen referensi"),
     ("3 dokumen relevan",       "7 dokumen relevan"),
     ("3 dokumen",               "7 dokumen"),
-    ("Google Drive",            "report/"),
+    ("Google Drive",            "data/dataset/"),
     ("Model/llama",             "Groq cloud"),
     ("*.md",                    "*.pdf"),
     ("ref_files[:2]",           "ref_files"),
@@ -129,7 +129,7 @@ if c6 and RES:
     inject_stream(c6, "".join(out), ec=7)
 
 chart = find(comp, 'matplotlib')
-png_path = BASE / 'report' / 'rouge_comparison.png'
+png_path = BASE / 'output' / 'rouge_comparison.png'
 if chart and png_path.exists():
     b64 = base64.b64encode(png_path.read_bytes()).decode()
     chart['outputs'] = [{'data': {'image/png': b64}, 'metadata': {}, 'output_type': 'display_data'}]
@@ -194,7 +194,7 @@ if sig6code and RES:
             s = rag[m]
             out.append(f"{m:<15} {s['P']:.4f}     {s['R']:.4f}     {s['F1']:.4f}\n")
         out.append("\n")
-    out.append("Selesai. Hasil juga tersimpan di report/rouge_results.json\n")
+    out.append("Selesai. Hasil juga tersimpan di output/rouge_results.json\n")
     inject_stream(sig6code, "".join(out), ec=14)
 
 # inject vectorstore status
